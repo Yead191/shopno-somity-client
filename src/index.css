@@ -12,6 +12,8 @@ a.active {
   transition: border-bottom 0.3s ease-in-out; /* Smooth transition */
 }
 
+
+
 nav ul li {
   position: relative; /* Ensure that the pseudo-element is positioned correctly */
 }
@@ -41,7 +43,6 @@ nav ul li::before {
   left: 0; /* Start from the left */
   transition: width 0.3s ease-in-out; /* Smooth transition */
 }
-
 
 :root {
   --radius: 0.625rem;

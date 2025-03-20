@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-
+import { motion } from "framer-motion";
 // react icons
 import { IoIosArrowDown, IoIosArrowUp, IoIosSearch } from "react-icons/io";
 import { FaDiscord, FaHome, FaTasks } from "react-icons/fa";
@@ -14,56 +14,57 @@ import { FiUser } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import logo from '/logo-oli.png'
 import { Link, NavLink } from "react-router-dom";
+import { useSidebar } from "@/components/ui/sidebar";
+import SearchBar from "@/components/SearchBar";
 
-const Navbar = () => {
+
+const Navbar = ({ SidebarTrigger }) => {
     const [accountMenuOpen, setAccountMenuOpen] = useState(false);
     const [isProductHover, setIsProductHover] = useState(false);
-
+    const { state } = useSidebar()
     const [isMegaMenuCollapse, setIsMegaMenuCollapse] = useState(false);
     const [mobileAboutUsOpen, setMobileAboutUsOpen] = useState(false);
     const [mobileServiceOpen, setMobileServiceOpen] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const [megaMenuSubItemsOpen, setMegaMenuSubItemsOpen] = useState("");
-
-    const handleMenuEnter = (menu) => {
-        setMegaMenuSubItemsOpen(menu);
+    const handleSearch = (query) => {
+        console.log("Search Query:", query);
     };
 
-    const handleMenuLeave = () => {
-        setMegaMenuSubItemsOpen("");
-    };
+    
     const links = <>
         <NavLink to={'/'} className="before:w-0 hover:before:w-full before:bg-[#3B9DF8] before:h-[2px] before:transition-all before:duration-300 before:absolute relative before:rounded-full before:bottom-[-2px] hover:text-[#3B9DF8] transition-all duration-300 before:left-0 cursor-pointer capitalize flex items-center gap-1">
-        <FaHome />
+            <FaHome />
             Home
         </NavLink>
         <NavLink to={'/services'} className="before:w-0 hover:before:w-full before:bg-[#3B9DF8] before:h-[2px] before:transition-all before:duration-300 before:absolute relative before:rounded-full before:bottom-[-2px] hover:text-[#3B9DF8] transition-all duration-300 before:left-0 cursor-pointer capitalize flex items-center gap-1">
             Services
         </NavLink>
-        
+
 
     </>
 
+
     return (
-        <nav className="flex items-center justify-between w-full py-2 fixed z-10 p-2 lg:px-28 bg-white border-b">
+        <nav className="flex items-center justify-between w-full py-2 fixed z-10 p-2 md:pl-16 lg:px-28 bg-white border-b">
             {/* logo */}
-            <Link to={'/'} className="flex items-center gap-1">
+            <div className="flex items-center">
+                {SidebarTrigger && <SidebarTrigger className={`${state === "expanded" ? "md:ml-48 lg:ml-42" : "ml-0 "}`} />} {/* Sidebar toggle button */}
+                <Link to={"/"} className="flex items-center gap-1">
+                    <img src={logo} alt="logo" className="w-[50px] -mt-1" />
+                    <h4 className="text-2xl font-semibold">
+                        স্বপ্নস্বাক্ষর <span className="text-[#3B9DF8]">সমিতি</span>
+                    </h4>
+                </Link>
+            </div>
 
-                <img src={logo} alt="logo" className="w-[50px] " />
-                <h4 className="text-2xl font-semibold">Oli<span className="text-[#3B9DF8]">Somity</span></h4>
-            </Link>
-
-            {/* nav links */}
-            <ul className="items-center gap-[20px] text-[1rem] text-[#424242] md:flex hidden">
-                {/* <NavLink 
-                to={'/'}
-                className="transition-all duration-500 cursor-pointer hover:text-[#3B9DF8] capitalize">
-                    Home<NavLink> */}
-                    {links}
-
-
-
-            </ul>
+            <motion.div 
+            initial={{y:10, opacity:0}}
+            animate={{y:0, opacity:1}}
+            transition={{duration: 0.8, ease: 'easeInOut'}}
+            className="">
+                <SearchBar onSearch={handleSearch} />
+            </motion.div>
 
             {/* user account */}
             <div className="flex items-center gap-[15px]">
@@ -77,8 +78,8 @@ const Navbar = () => {
                             className="w-[10px] h-[10px] rounded-full bg-green-500 absolute bottom-[0px] right-0 border-2 border-white"></div>
                     </div>
 
-                    <h1 className="text-[1rem] font-[400] text-gray-600 sm:block hidden">Dhon
-                        Deo</h1>
+                    <h1 className="text-[1rem] font-[400] text-gray-600 sm:block hidden">Oli
+                        Ahmed</h1>
 
                     <div
                         className={`${accountMenuOpen ? "translate-y-0 opacity-100 z-[1]" : "translate-y-[10px] opacity-0 z-[-1]"} bg-white w-max rounded-md absolute top-[45px] right-0 p-[10px] flex flex-col transition-all duration-300 gap-[5px]`}>
@@ -109,12 +110,12 @@ const Navbar = () => {
 
                 </div>
 
-                <CiMenuFries onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                    className="text-[1.8rem] text-[#424242]c cursor-pointer md:hidden flex" />
+                {/* <CiMenuFries onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                    className="text-[1.8rem] text-[#424242]c cursor-pointer md:hidden flex" /> */}
             </div>
 
             {/* mobile sidebar */}
-            <aside
+            {/* <aside
                 className={` ${mobileSidebarOpen ? "translate-x-0 opacity-100 z-20" : "translate-x-[200px] opacity-0 z-[-1]"} md:hidden bg-white p-4 text-center absolute top-[55px] right-0 sm:w-[300px] w-full rounded-md transition-all duration-300`}>
                 <ul className="items-start gap-[20px] text-[1rem] text-gray-600 flex flex-col">
                     <li onClick={() => setIsMegaMenuCollapse(!isMegaMenuCollapse)}
@@ -124,7 +125,7 @@ const Navbar = () => {
                             className={`${isMegaMenuCollapse ? "rotate-0" : "rotate-[180deg]"} text-gray-600 group-hover:text-[#3B9DF8] transition-all duration-300`} />
                     </li>
 
-                    {/* product mega menu */}
+
                     <div onClick={() => setMegaMenuSubItemsOpen("more_product")}
                         className={`${isMegaMenuCollapse ? "hidden" : "block"} group font-[500] ml-6`}>
                         <h4 className="text-left flex items-center gap-[5px]">
@@ -164,7 +165,7 @@ const Navbar = () => {
                     </li>
                     <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-pointer capitalize">Support</li>
                 </ul>
-            </aside>
+            </aside> */}
         </nav>
     );
 };
