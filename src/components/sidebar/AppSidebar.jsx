@@ -110,11 +110,12 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <h2 className="font-bold my-4">
 
-                        <div className="flex items-center gap-3" onClick={toggleSidebar} >
+                        <div className="flex items-center gap-1" onClick={toggleSidebar} >
 
-                            <Logs />
+                            <img src={logo} alt="logo" className="w-[45px] -mt-0.5"/>
                             <h4 className={`text-2xl font-semibold ${state === 'expanded' && "lg:flex"}  md:hidden`}>
-                                Menu  <span className="text-[#3B9DF8] ml-0.5">Items</span>
+                                স্বপ্নস্বাক্ষর  <span className="text-[#3B9DF8] ml-1">সমিতি</span>
+
                             </h4>
 
                         </div>

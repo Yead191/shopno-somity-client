@@ -7,9 +7,9 @@
 a.active {
   color: #0E82FD;
   font-weight: 500;
-  padding: 0 6px;
+  /* padding: 0 6px; */
   border-bottom: 2px solid #0E82FD; /* Initially transparent */
-  transition: border-bottom 0.3s ease-in-out; /* Smooth transition */
+  transition: border-bottom 0.3s ease-in-out; 
 }
 
 
