@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import Home from "@/Pages/Home/Home";
 import MainLayout from "@/Layout/MainLayout";
 import DashboardLayout from "@/Layout/DashboardLayout";
@@ -10,73 +10,68 @@ import { useDispatch } from "react-redux";
 import { useAuthUser } from "@/redux/auth/authAction";
 import { setLoading, setUser } from "@/redux/auth/authSlice";
 import auth from "@/firebase/firebase.init";
-
+import ManageUsers from "@/Pages/Dashboard/Admin/ManageMembers/ManageMembers";
 
 const Router = () => {
-    const dispatch = useDispatch();
-    const user = useAuthUser();
-    console.log(user);
+  const dispatch = useDispatch();
+  const user = useAuthUser();
+  console.log(user);
 
-    useEffect(() => {
-        dispatch(setLoading(true));
+  useEffect(() => {
+    dispatch(setLoading(true));
 
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
-                dispatch(
-                    setUser({
-                        email: currentUser.email,
-                        displayName: currentUser.displayName,
-                        photoURL: currentUser.photoURL,
-                        uid: currentUser.uid,
-                        createdAt: currentUser.metadata.creationTime,
-                        lastLoginAt: currentUser.metadata.lastSignInTime,
-                    })
-                );
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        dispatch(
+          setUser({
+            email: currentUser.email,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL,
+            uid: currentUser.uid,
+            createdAt: currentUser.metadata.creationTime,
+            lastLoginAt: currentUser.metadata.lastSignInTime,
+          })
+        );
 
-                // Set Token in Cookies
-                // await axios.post(
-                //     `${import.meta.env.VITE_API_URL}/auth/jwt`,
-                //     { email: currentUser.email },
-                //     { withCredentials: true }
-                // );
-            } else {
-                // dispatch(logOutUser());
+        // Set Token in Cookies
+        // await axios.post(
+        //     `${import.meta.env.VITE_API_URL}/auth/jwt`,
+        //     { email: currentUser.email },
+        //     { withCredentials: true }
+        // );
+      } else {
+        // dispatch(logOutUser());
+        // // Clear Token from Cookies
+        // await axios.post(
+        //     `${import.meta.env.VITE_API_URL}/auth/logout`,
+        //     {},
+        //     { withCredentials: true }
+        // );
+      }
+      dispatch(setLoading(false));
+    });
 
-                // // Clear Token from Cookies
-                // await axios.post(
-                //     `${import.meta.env.VITE_API_URL}/auth/logout`,
-                //     {},
-                //     { withCredentials: true }
-                // );
-            }
-            dispatch(setLoading(false));
-        });
+    return () => unsubscribe();
+  }, [dispatch]);
+  return (
+    <>
+      <Routes>
+        {/* main routes */}
+        <Route path="/" element={<MainLayout></MainLayout>}>
+          <Route path="/" element={<Home></Home>} />
+        </Route>
 
-        return () => unsubscribe();
-    }, [dispatch]);
-    return (
-        <>
-            <Routes>
-                {/* main routes */}
-                <Route path="/" element={<MainLayout></MainLayout>}>
-                    <Route path="/" element={<Home></Home>} />
-                </Route>
+        {/* authentication routes */}
+        <Route path="/login" element={<Login />}></Route>
+        <Route path="/register" element={<Register />}></Route>
 
-                {/* authentication routes */}
-                <Route path="/login" element={<Login />}></Route>
-                <Route path="/register" element={<Register />}></Route>
-
-
-                {/* dashboard routes */}
-                <Route path="/dashboard" element={<DashboardLayout />}>
-
-                </Route>
-
-            </Routes>
-
-
-        </>
-    );
+        {/* dashboard routes */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route path="admin/manage-users" element={<ManageUsers />} />
+        </Route>
+      </Routes>
+    </>
+  );
 };
 
 export default Router;
