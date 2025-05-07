@@ -1,25 +1,55 @@
 import IsError from "@/authentication/IsError";
+import { imgUpload } from "@/components/imgUpload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import { imgUpload } from "@/lib/imgUpload";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import axios from "axios";
 import { useState } from "react";
-import toast from "react-hot-toast";
-import { FaFileUpload } from "react-icons/fa";
+import { FaFileUpload, FaEye, FaEyeSlash, FaCopy } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 
-const AddMemberForm = ({  setIsFormOpen }) => {
-  const [memberId, setMemberId] = useState(""); // Replaced role with memberId
+const AssignUserForm = ({ refetch, setIsFormOpen }) => {
+  const [role, setRole] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
-  const [joinDate, setJoinDate] = useState(""); 
-  const [phoneNumber, setPhoneNumber] = useState(880);
+  const [email, setEmail] = useState("");
   const [preview, setPreview] = useState("");
   const [isError, setIsError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("+880");
+  const [strongPassword, setStrongPassword] = useState("");
+  const [confirmedPassword, setConfirmedPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmedPassword, setShowConfirmedPassword] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState({
+    role: "",
+    email: "",
+    password: "",
+  });
+  const [signal, setSignal] = useState({
+    lowercase: false,
+    uppercase: false,
+    number: false,
+    symbol: false,
+    length: false,
+    strong: false,
+  });
 
   // Image Upload Functionality
   const handleUploadImage = () => {
@@ -38,12 +68,15 @@ const AddMemberForm = ({  setIsFormOpen }) => {
   // Bangladeshi phone number validation
   const validateBangladeshiNumber = (number) => {
     const cleanNumber = number.replace(/[^\d+]/g, "");
-    const bdNumberRegex = /^\8801[3-9][0-9]{8}$/;
+    const bdNumberRegex = /^\+8801[3-9][0-9]{8}$/;
     return bdNumberRegex.test(cleanNumber);
   };
 
   const handlePhoneChange = (e) => {
-    const value = e.target.value;
+    let value = e.target.value;
+    if (!value.startsWith("+880")) {
+      value = "+880" + value.replace(/^\+880/, "");
+    }
     setPhoneNumber(value);
     if (value && !validateBangladeshiNumber(value)) {
       setIsError(
@@ -54,120 +87,62 @@ const AddMemberForm = ({  setIsFormOpen }) => {
     }
   };
 
-  // Confirm Modal
-  const showConfirmModal = (name, memberId) => {
-    Swal.fire({
-      html: `
-         <div class="bg-background text-foreground p-4 mt-4 rounded-2xl max-w-md w-full border space-y-8">
-          <!-- Success Icon and Message -->
-          <div class="text-center space-y-2">
-            <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 mx-auto">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h2 class="text-xl font-bold">Member Successfully Added</h2>
-            <p class="text-sm px-8 -mt-2 text-muted-foreground">The member has been added to the cooperative society. Share their details as needed.</p>
-          </div>
+  // Email validation
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
-           <!-- Title -->
-           <div class="text-center -mt-5">
-             <span class="inline-flex items-center rounded-full bg-primary px-4 py-1 text-sm font-medium text-primary-foreground">
-               Member Details
-             </span>
-           </div>
-         
-           <!-- Credentials Section -->
-           <div class="space-y-2 -mt-5">
-             <!-- Name -->
-             <div class="flex flex-col justify-start space-y-1.5">
-               <p for="copy-name" class="text-sm text-left font-medium text-gray-700">Name</p>
-               <div class="relative">
-                 <input id="copy-name" readonly type="text" value="${name}" class="w-full rounded-lg border bg-muted px-4 py-2 pr-12 text-sm font-medium text-primary focus:outline-none" />
-               </div>
-             </div>
-         
-             <!-- Member ID -->
-             <div class="flex flex-col justify-start space-y-1.5">
-               <p for="copy-memberId" class="text-sm text-left font-medium text-gray-700">Member ID</p>
-               <div class="relative">
-                 <input id="copy-memberId" readonly type="text" value="${memberId}" class="w-full rounded-lg border bg-muted px-4 py-2 pr-12 text-sm font-medium text-primary focus:outline-none" />
-                 <button
-                   onclick="copyToClipboard('copy-memberId')"
-                   class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition"
-                 >
-                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                   </svg>
-                 </button>
-               </div>
-             </div>
-           </div>
-         
-           <!-- Improved Warning Notice -->
-           <div class="flex items-start -mt-4 gap-3 p-2 rounded-xl border border-yellow-300 bg-yellow-100/60 text-yellow-900 text-sm">
-             <div>
-               <p class="font-semibold">⚠️ Important Notice</p>
-               <p class="mt-1">Please copy the member details now. These details won’t be shown again after closing this modal. And after copying, the modal will be closed!</p>
-             </div>
-           </div>
-         </div>
-      `,
-      confirmButtonText: "Ok, Close",
-      confirmButtonColor: "#000",
-      background: "#f3f4f6",
-      didOpen: () => {
-        window.copyToClipboard = (id) => {
-          const input = document.getElementById(id);
-          const text = input.value;
-          navigator.clipboard
-            .writeText(text)
-            .then(() => {
-              Swal.fire({
-                toast: true,
-                position: "top-end",
-                icon: "success",
-                title: "Copied to clipboard!",
-                text: "Member details have been copied successfully.",
-                showConfirmButton: false,
-                timer: 3000,
-                background: "#ffffff",
-                customClass: {
-                  title: "text-blue-800 font-semibold",
-                  content: "text-gray-600",
-                },
-              });
-            })
-            .catch(() => {
-              Swal.fire({
-                toast: true,
-                position: "top-end",
-                icon: "error",
-                title: "Copy failed",
-                text: "Unable to copy text to clipboard.",
-                showConfirmButton: false,
-                timer: 2000,
-                background: "#ffffff",
-                customClass: {
-                  title: "text-red-800 font-semibold",
-                  content: "text-gray-600",
-                },
-              });
-            });
-        };
-      },
-      customClass: {
-        title: "text-2xl font-bold",
-        confirmButton: "px-6 py-2 text-white bg-black font-semibold rounded-md",
-      },
+  // Password Validation Functionality
+  const handlePasswordChange = (e) => {
+    const password = e.target.value;
+    setStrongPassword(password);
+
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    setSignal({
+      lowercase: hasLowerCase,
+      uppercase: hasUpperCase,
+      number: hasNumber,
+      symbol: hasSymbol,
+      length: password.length >= 8,
+      strong:
+        hasUpperCase &&
+        hasLowerCase &&
+        hasNumber &&
+        hasSymbol &&
+        password.length >= 8,
     });
+  };
+
+  // Copy to Clipboard
+  const copyToClipboard = (text, type) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        toast({
+          title: "Copied to clipboard!",
+          description: `${type} has been copied successfully.`,
+          variant: "success",
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "Copy failed",
+          description: `Unable to copy ${type} to clipboard.`,
+          variant: "destructive",
+        });
+      });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Show error if image not selected
+    // Image validation
     if (!image) {
       setLoading(false);
       setIsError("Please Select An Image For Your Profile!");
@@ -175,23 +150,70 @@ const AddMemberForm = ({  setIsFormOpen }) => {
     }
 
     // Upload Image To imgBB
-    // const imageUrl = await imgUpload(image);
-    // if (!imageUrl) {
-    //   setLoading(false);
-    //   setIsError("Image Upload Failed! Try Again");
-    //   return;
-    // }
-
-    // Member ID and Join Date Validation
-    if (!memberId) {
+    let imageUrl;
+    try {
+      imageUrl = await imgUpload(image);
+      if (!imageUrl) {
+        setLoading(false);
+        setIsError("Image Upload Failed! Try Again");
+        return;
+      }
+    } catch (error) {
       setLoading(false);
-      setIsError("Member ID is Required");
+      setIsError("Image Upload Failed! Try Again");
       return;
     }
 
-    if (!joinDate) {
+    // Role Validation
+    if (!role) {
       setLoading(false);
-      setIsError("Join Date is Required");
+      setIsError("Role Is Required");
+      return;
+    }
+
+    // Email Validation
+    if (!email || !validateEmail(email)) {
+      setLoading(false);
+      setIsError("Please Enter A Valid Email Address");
+      return;
+    }
+
+    // Password Validation
+    if (!signal.lowercase) {
+      setLoading(false);
+      setIsError("Password must contain at least one lowercase letter.");
+      return;
+    }
+    if (!signal.uppercase) {
+      setLoading(false);
+      setIsError("Password must contain at least one uppercase letter.");
+      return;
+    }
+    if (!signal.number) {
+      setLoading(false);
+      setIsError("Password must contain at least one number.");
+      return;
+    }
+    if (!signal.symbol) {
+      setLoading(false);
+      setIsError("Password must contain at least one special character.");
+      return;
+    }
+    if (!signal.length) {
+      setLoading(false);
+      setIsError("Password must be at least 8 characters long.");
+      return;
+    }
+    if (!signal.strong) {
+      setLoading(false);
+      setIsError("Password strength is too weak.");
+      return;
+    }
+
+    // Confirmed Password Validation
+    if (strongPassword !== confirmedPassword) {
+      setLoading(false);
+      setIsError("Passwords do not match.");
       return;
     }
 
@@ -204,161 +226,353 @@ const AddMemberForm = ({  setIsFormOpen }) => {
       return;
     }
 
-    const member = {
-      memberId,
+    const user = {
+      role,
+      email,
       name,
-      joinDate,
+      password: strongPassword,
       photo: imageUrl,
       phoneNumber,
     };
 
     try {
       const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/cooperative/members`,
-        member
+        `${import.meta.env.VITE_API_URL}/users/assign-user`,
+        user
       );
-      if (data?.insertedId) {
-        setIsFormOpen(false);
-        // refetch();
+      console.log(data);
+      // Check for success based on response structure
+      if (
+        data?.firestore?.insertedId ||
+        data?.message === "User Created Successfully"
+      ) {
+        refetch();
         setIsError("");
-        setMemberId("");
+        setRole("");
         setName("");
         setImage("");
-        setJoinDate("");
-        setPhoneNumber(880);
+        setEmail("");
         setPreview("");
-        showConfirmModal(name, memberId);
+        setPhoneNumber("+880");
+        setStrongPassword("");
+        setConfirmedPassword("");
+        setShowPassword(false);
+        setShowConfirmedPassword(false);
+        setModalData({
+          role: user.role,
+          email: user.email,
+          password: user.password,
+        });
+        setIsModalOpen(true);
+      } else {
+        setIsError("Unexpected response from server. Please try again.");
       }
     } catch (error) {
-      const errMsg = error?.response?.data?.message || "Something went wrong!";
+      // Log the error for debugging
+      console.error("Error during user assignment:", error);
+      const errMsg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to assign user. Please try again.";
       setIsError(errMsg);
     } finally {
       setLoading(false);
     }
   };
-
   return (
-    <Card className="border shadow-none border-[#e5e7eb] w-full py-6 rounded-lg">
-      <CardContent className="px-4">
-        <form onSubmit={handleSubmit} className="space-y-2">
-          {/* Name, Member ID, Join Date */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Name */}
-            <div className="w-full space-y-2">
-              <Label>Name</Label>
-              <Input
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={"Enter Member Name"}
-              />
-            </div>
-            {/* Member ID */}
-            <div className="w-full space-y-2">
-              <Label>Member ID</Label>
-              <Input
-                type="text"
-                required
-                value={memberId}
-                onChange={(e) => setMemberId(e.target.value)}
-                placeholder={"Enter Member ID"}
-              />
-            </div>
-            {/* Join Date */}
-            <div className="w-full space-y-2">
-              <Label>Join Date</Label>
-              <Input
-                type="date"
-                required
-                value={joinDate}
-                onChange={(e) => setJoinDate(e.target.value)}
-              />
-            </div>
-          </div>
-          {/* Phone Number, Photo */}
-          <div className="grid grid-cols-1 md:grid-cols-2 place-items-center gap-4">
-            {/* Phone Number */}
-            <div className="w-full space-y-2">
-              <Label>Phone Number</Label>
-              <Input
-                type="number"
-                required
-                value={phoneNumber}
-                onChange={handlePhoneChange}
-                pattern="\8801[3-9][0-9]{8}"
-                maxLength={13}
-                placeholder={"Enter Phone Number"}
-              />
-            </div>
-            {/* Photo */}
-            <div className="w-full space-y-2">
-              <Label>Profile Photo</Label>
-              <div className="w-full">
+    <>
+      <Card className="border shadow-none border-[#e5e7eb] w-full py-6 rounded-lg">
+        <CardContent className="px-4">
+          <form onSubmit={handleSubmit} className="space-y-2">
+            {/* Name, Email, Role */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Name */}
+              <div className="w-full space-y-2">
+                <Label>Username</Label>
                 <Input
-                  type="file"
-                  name="image"
-                  id="image_input"
-                  className="hidden"
-                  onChange={handleFileChange}
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={"Enter Username"}
                 />
-                {preview === "" ? (
-                  <div
-                    className="w-full md:w-[100%] flex items-center gap-3 border py-[5.6px] rounded-lg px-4 cursor-pointer"
-                    onClick={handleUploadImage}
-                  >
-                    <FaFileUpload className="text-[1.5rem] text-gray-500" />
-                    <p className="text-gray-700 text-xs">
-                      Browse To Upload Profile Photo
-                    </p>
-                  </div>
-                ) : (
-                  <div className="w-full border rounded-lg p-0.5 flex justify-between items-center gap-4">
-                    <div className="flex items-center gap-2 pl-2">
-                      <img
-                        src={preview}
-                        alt="Selected file preview"
-                        className="mx-auto object-cover rounded-lg w-7 h-7"
-                      />
-                      {image && (
-                        <div>
-                          <p className="text-[10px] font-medium text-gray-700">
-                            {image.name}
-                          </p>
-                          <p className="text-[9px] text-gray-500">
-                            {(image.size / 1024).toFixed(2)} KB | {image.type}
-                          </p>
-                        </div>
-                      )}{" "}
+              </div>
+              {/* Email */}
+              <div className="w-full space-y-2">
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={"Enter User Email"}
+                />
+              </div>
+              {/* Select Role */}
+              <div className="w-full space-y-2">
+                <Label>Select Role</Label>
+                <Select value={role} onValueChange={setRole}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="user">User</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {/* PhoneNumber, Photo */}
+            <div className="grid grid-cols-1 md:grid-cols-2 place-items-center gap-4">
+              {/* PhoneNumber */}
+              <div className="w-full space-y-2">
+                <Label>Phone Number</Label>
+                <Input
+                  type="tel"
+                  required
+                  value={phoneNumber}
+                  onChange={handlePhoneChange}
+                  pattern="\+8801[3-9][0-9]{8}"
+                  maxLength={14}
+                  placeholder={"Enter Phone Number"}
+                />
+              </div>
+              {/* Photo */}
+              <div className="w-full space-y-2">
+                <Label>Select Photo</Label>
+                <div className="w-full">
+                  <Input
+                    type="file"
+                    name="image"
+                    id="image_input"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  {preview === "" ? (
+                    <div
+                      className="w-full md:w-[100%] flex items-center gap-3 border py-[5.6px] rounded-lg px-4 cursor-pointer"
+                      onClick={handleUploadImage}
+                    >
+                      <FaFileUpload className="text-[1.5rem] text-gray-500" />
+                      <p className="text-gray-700 text-xs">
+                        Browse To Upload Profile Photo
+                      </p>
                     </div>
-                    <MdDelete
-                      className="text-[2rem] text-white bg-[#000000ad] p-1 rounded-r-lg mr-[1px] cursor-pointer"
-                      onClick={() => {
-                        setPreview("");
-                        setImage(null);
-                      }}
-                    />
-                  </div>
-                )}
+                  ) : (
+                    <div className="w-full border rounded-lg p-0.5 flex justify-between items-center gap-4">
+                      <div className="flex items-center gap-2 pl-2">
+                        <img
+                          src={preview}
+                          alt="Selected file preview"
+                          className="mx-auto object-cover rounded-lg w-7 h-7"
+                        />
+                        {image && (
+                          <div>
+                            <p className="text-[10px] font-medium text-gray-700">
+                              {image.name}
+                            </p>
+                            <p className="text-[9px] text-gray-500">
+                              {(image.size / 1024).toFixed(2)} KB | {image.type}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      <MdDelete
+                        className="text-[2rem] text-white bg-[#000000ad] p-1 rounded-r-lg mr-[1px] cursor-pointer"
+                        onClick={() => {
+                          setPreview("");
+                          setImage(null);
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Password, Confirmed Password */}
+            <div className="grid mt-4 grid-cols-1 md:grid-cols-2 place-items-center gap-4">
+              {/* Password */}
+              <div className="w-full space-y-2">
+                <Label>Password</Label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={strongPassword}
+                    onChange={handlePasswordChange}
+                    placeholder={"Enter Strong Password"}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+              {/* Confirmed Password */}
+              <div className="w-full space-y-2">
+                <Label>Confirmed Password</Label>
+                <div className="relative">
+                  <Input
+                    type={showConfirmedPassword ? "text" : "password"}
+                    required
+                    value={confirmedPassword}
+                    onChange={(e) => setConfirmedPassword(e.target.value)}
+                    placeholder={"Confirm Password"}
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowConfirmedPassword(!showConfirmedPassword)
+                    }
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                  >
+                    {showConfirmedPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+            </div>
+            {/* Error */}
+            <div className="mt-4 mb-4">
+              <IsError isError={isError} />
+            </div>
+            {/* Add User Button */}
+            <Button
+              type="submit"
+              disabled={loading}
+              className={"cursor-pointer px-8"}
+            >
+              {loading ? "Assigning User..." : "Assign User"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Confirmation Modal */}
+      <Dialog
+        open={isModalOpen}
+        onOpenChange={(open) => {
+          setIsModalOpen(open);
+          if (!open) setIsFormOpen(false);
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-center">
+              Account Successfully Created
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            {/* Success Message */}
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 mx-auto">
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                The user account has been created. Share these credentials with
+                the user.
+              </p>
+            </div>
+
+            {/* Role Title */}
+            <div className="text-center">
+              <span className="inline-flex items-center rounded-full bg-primary px-4 py-1 text-sm font-medium text-primary-foreground">
+                {modalData.role.charAt(0).toUpperCase() +
+                  modalData.role.slice(1)}{" "}
+                Account Credentials
+              </span>
+            </div>
+
+            {/* Credentials Section */}
+            <div className="space-y-4">
+              {/* Email */}
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="copy-email"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Email
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="copy-email"
+                    readOnly
+                    value={modalData.email}
+                    className="pr-10"
+                  />
+                  <button
+                    onClick={() => copyToClipboard(modalData.email, "Email")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-gray-700"
+                  >
+                    <FaCopy />
+                  </button>
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="copy-password"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="copy-password"
+                    readOnly
+                    value={modalData.password}
+                    className="pr-10"
+                  />
+                  <button
+                    onClick={() =>
+                      copyToClipboard(modalData.password, "Password")
+                    }
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-gray-700"
+                  >
+                    <FaCopy />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Warning Notice */}
+            <div className="flex items-start gap-3 p-3 rounded-xl border border-yellow-300 bg-yellow-100/60 text-yellow-900 text-sm">
+              <div>
+                <p className="font-semibold">⚠️ Important Notice</p>
+                <p className="mt-1">
+                  Please copy the password now. For security reasons, this
+                  password won’t be shown again after closing this modal.
+                </p>
               </div>
             </div>
           </div>
-          {/* Error */}
-          <div className="mt-4 mb-4">
-            <IsError isError={isError} />
+          <div className="flex justify-end">
+            <Button
+              onClick={() => setIsModalOpen(false)}
+              className="px-6 py-2 text-white bg-black font-semibold rounded-md"
+            >
+              Ok, Close
+            </Button>
           </div>
-          {/* Add Member Button */}
-          <Button
-            type="submit"
-            disabled={loading}
-            className={"cursor-pointer px-8"}
-          >
-            {loading ? "Adding Member..." : "Add Member"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
-export default AddMemberForm;
+export default AssignUserForm;

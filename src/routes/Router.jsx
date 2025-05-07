@@ -11,6 +11,7 @@ import { useAuthUser } from "@/redux/auth/authAction";
 import { setLoading, setUser } from "@/redux/auth/authSlice";
 import auth from "@/firebase/firebase.init";
 import ManageUsers from "@/Pages/Dashboard/Admin/ManageMembers/ManageMembers";
+import MemberProfilePage from "@/Pages/MemberProfile/MemberProfile";
 
 const Router = () => {
   const dispatch = useDispatch();
@@ -68,6 +69,7 @@ const Router = () => {
         {/* dashboard routes */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route path="admin/manage-users" element={<ManageUsers />} />
+          <Route path="member-profile/:id" element={<MemberProfilePage />} />
         </Route>
       </Routes>
     </>

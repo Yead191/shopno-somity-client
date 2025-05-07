@@ -31,17 +31,17 @@ const ManageMembers = () => {
   };
 
   // Get all members data
-  // const { data, isLoading, refetch, error } = useQuery({
-  //   queryKey: ["members", page, sort, search, selectedFilter],
-  //   queryFn: async () => {
-  //     const { data } = await axios(
-  //       `${
-  //         import.meta.env.VITE_API_URL
-  //       }/cooperative/members?page=${page}&sort=${sort}&search=${search}&filter=${selectedFilter}`
-  //     );
-  //     return data;
-  //   },
-  // });
+  const { data, isLoading, refetch, error } = useQuery({
+    queryKey: ["members", page, sort, search, selectedFilter],
+    queryFn: async () => {
+      const { data } = await axios(
+        `${
+          import.meta.env.VITE_API_URL
+        }/users?page=${page}&sort=${sort}&search=${search}&filter=${selectedFilter}`
+      );
+      return data;
+    },
+  });
 
   // Pagination Functions
   const handlePageChange = (pageNumber) => setPage(pageNumber);
@@ -52,52 +52,8 @@ const ManageMembers = () => {
 
   // if (error) return "Error While Fetching Data";
 
-  const data = [
-    {
-      name: "মিরাজ হোসেন",
-      memberId: "CS001",
-      phoneNumber: "8801712345678",
-      joinDate: "2019-07-01",
-      totalContributions: 5000,
-      photo: "https://example.com/images/miraj.jpg",
-    },
-    {
-      name: "তানভির হোসেন আনফি",
-      memberId: "CS002",
-      phoneNumber: "8801812345678",
-      joinDate: "2019-08-15",
-      totalContributions: 4500,
-      photo: "https://example.com/images/tanvir.jpg",
-    },
-    {
-      name: "আব্দুল আলিম",
-      memberId: "CS003",
-      phoneNumber: "8801912345678",
-      joinDate: "2019-09-10",
-      totalContributions: 6000,
-      photo: "https://example.com/images/abdul.jpg",
-    },
-    {
-      name: "আমিনুল ইসলাম",
-      memberId: "CS004",
-      phoneNumber: "8801612345678",
-      joinDate: "2019-10-05",
-      totalContributions: 5200,
-      photo: "https://example.com/images/aminul.jpg",
-    },
-    {
-      name: "কামরুল হাসান",
-      memberId: "CS005",
-      phoneNumber: "8801512345678",
-      joinDate: "2019-11-20",
-      totalContributions: 4800,
-      photo: "https://example.com/images/kamrul.jpg",
-    },
-  ];
-  const isLoading = false;
-
   return (
-    <div className="px-5">
+    <div className="">
       <DashboardPagesHeader
         title={"Manage Members"}
         subtitle={
@@ -183,7 +139,8 @@ const ManageMembers = () => {
             </Button>
             <Button
               onClick={() => setIsFormOpen(!isFormOpen)}
-              className={"cursor-pointer"}
+              className={`cursor-pointer `}
+              variant={`${isFormOpen ? "outline" : ""}`}
             >
               Add New Member
             </Button>
@@ -193,19 +150,12 @@ const ManageMembers = () => {
       {/* Add Member Form */}
       {isFormOpen && (
         <div className={`${isFormOpen ? "visible" : "hidden"} mt-4`}>
-          <AddMemberForm
-            // refetch={refetch}
-            setIsFormOpen={setIsFormOpen}
-          />
+          <AddMemberForm refetch={refetch} setIsFormOpen={setIsFormOpen} />
         </div>
       )}
 
       {/* Members Table */}
-      <MembersTable
-        members={data}
-        isLoading={isLoading}
-        // refetch={refetch}
-      />
+      <MembersTable members={data} isLoading={isLoading} refetch={refetch} />
     </div>
   );
 };

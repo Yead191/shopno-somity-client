@@ -28,51 +28,46 @@ import {
 } from "@/components/ui/tooltip";
 // import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { format } from "date-fns";
-import { Loader, MoreVertical, Trash } from "lucide-react";
+import { Loader, MoreVertical, Trash, User } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link } from "react-router-dom";
 
 // Sample data based on the Excel sheet
 
-const MembersTable = ({ members, isLoading }) => {
+const MembersTable = ({ members, isLoading, refetch }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // const handleMemberDelete = async () => {
-  //   setIsDeleting(true);
-  //   try {
-  //     const { data } = await axios.delete(
-  //       `${
-  //         import.meta.env.VITE_API_URL
-  //       }/cooperative/members/${selectedMemberId}`
-  //     );
+  const handleMemberDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const { data } = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/users/delete-user/${selectedMemberId}`
+      );
 
-  //     if (data?.deletedCount) {
-  //       refetch();
-  //       setIsOpen(false);
-  //       setErrorMessage("");
-  //       toast("Member Deleted", {
-  //         description: `${selectedMemberId} Was Successfully Deleted!`,
-  //         duration: 3000,
-  //         position: "top-right",
-  //       });
-  //     } else {
-  //       setErrorMessage("Member could not be deleted, Please try again!");
-  //     }
-  //   } catch (error) {
-  //     const message =
-  //       error?.response?.data?.message ||
-  //       "Something went wrong while deleting the member!";
-  //     setErrorMessage(message);
-  //   } finally {
-  //     setIsDeleting(false);
-  //   }
-  // };
+      toast("Member Deleted", {
+        description: `${selectedMemberId} Was Successfully Deleted!`,
+        duration: 3000,
+        position: "top-right",
+      });
+      refetch();
+      setErrorMessage("");
+      setIsOpen(false);
+    } catch (error) {
+      const message =
+        error?.response?.data?.message ||
+        "Something went wrong while deleting the member!";
+      setErrorMessage(message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Table className={"mt-6"}>
@@ -80,7 +75,7 @@ const MembersTable = ({ members, isLoading }) => {
       <TableHeader>
         <TableRow className={"bg-gray-50 hover:bg-gray-50"}>
           <TableHead>Name</TableHead>
-          <TableHead>Member ID</TableHead>
+          <TableHead>Email</TableHead>
           <TableHead>Phone Number</TableHead>
           <TableHead>Join Date</TableHead>
           <TableHead>Total Contributions</TableHead>
@@ -121,15 +116,15 @@ const MembersTable = ({ members, isLoading }) => {
                     <span>{member?.name}</span>
                   </div>
                 </TableCell>
-                <TableCell>{member?.memberId}</TableCell>
+                <TableCell>{member?.email}</TableCell>
                 <TableCell>{member?.phoneNumber}</TableCell>
                 <TableCell>
-                  {member?.joinDate
-                    ? format(new Date(member.joinDate), "dd MMM yyyy")
+                  {member?.createdAt
+                    ? format(new Date(member.createdAt), "dd MMM yyyy")
                     : "N/A"}
                 </TableCell>
                 <TableCell>
-                  ৳{member?.totalContributions.toLocaleString()}
+                  ৳{member?.totalContributions?.toLocaleString()}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu modal={false}>
@@ -143,9 +138,14 @@ const MembersTable = ({ members, isLoading }) => {
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
+                      <Link to={`/dashboard/member-profile/${member._id}`}>
+                        <DropdownMenuItem>
+                          <User /> View Profile
+                        </DropdownMenuItem>
+                      </Link>
                       <DropdownMenuItem
                         onClick={() => {
-                          setSelectedMemberId(member?.memberId);
+                          setSelectedMemberId(member?.email);
                           setIsOpen(true);
                         }}
                         className="cursor-pointer"
@@ -189,7 +189,7 @@ const MembersTable = ({ members, isLoading }) => {
             <Button
               variant="destructive"
               className="cursor-pointer"
-              // onClick={handleMemberDelete}
+              onClick={handleMemberDelete}
               disabled={isDeleting}
             >
               {isDeleting ? (
