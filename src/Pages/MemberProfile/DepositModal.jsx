@@ -19,24 +19,22 @@ import { useAuthUser } from "@/redux/auth/authAction";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 // import { addTransaction } from "../api/transactions"
 
-function DepositModal({ member, onTransactionAdded, refetch }) {
+function DepositModal({ member, refetch }) {
   const user = useAuthUser();
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const axiosSecure = useAxiosSecure();
-  console.log(user);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!amount || Number.parseFloat(amount) <= 0) {
       toast.error("Please enter a valid amount greater than 0");
       return;
     }
 
     setIsSubmitting(true);
-
     try {
       // await addTransaction({
       //   amount: Number.parseFloat(amount),
@@ -44,7 +42,7 @@ function DepositModal({ member, onTransactionAdded, refetch }) {
       //   type: "Deposit",
       //   isDeposit: true,
       // });
-      const transition = {
+      const transaction = {
         memberName: member.name,
         memberEmail: member.email,
         memberId: member._id,
@@ -55,8 +53,8 @@ function DepositModal({ member, onTransactionAdded, refetch }) {
         approvedByEmail: user.email,
       };
 
-      toast.promise(axiosSecure.post("/transitions", transition), {
-        loading: "Loading transition...",
+      toast.promise(axiosSecure.post("/transactions", transaction), {
+        loading: "Loading transaction...",
         success: () => {
           refetch();
           setOpen(false);
@@ -79,7 +77,7 @@ function DepositModal({ member, onTransactionAdded, refetch }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700 cursor-pointer">
           <ArrowUpCircle className="mr-2 h-4 w-4" /> Deposit
         </Button>
       </DialogTrigger>

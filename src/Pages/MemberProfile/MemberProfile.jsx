@@ -15,108 +15,6 @@ import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
-// Mock data - replace with actual data fetching
-// const getMemberData = (id) => {
-//   return {
-//     id,
-//     name: "Altaf Husain",
-//     nameLocal: "Altaf Husain",
-//     position: "Investment Officer",
-//     investmentAmount: 9100.8,
-//     father: "Robiul",
-//     mother: "Jorina",
-//     dateOfBirth: "1998-07-23",
-//     gender: "Male",
-//     mobile: "01782237547",
-//     joinDate: "2024-02-01",
-//     presentAddress: "Dhaka Mirpur",
-//     permanentAddress: "Dhaka Mirpur",
-//     profileImage: "/placeholder.jpg",
-//     transactions: [
-//       {
-//         id: 1,
-//         date: "2024-02-09",
-//         type: "Investment Profit",
-//         amount: 910.8,
-//         status: "Approved",
-//         isDeposit: true,
-//       },
-//       {
-//         id: 2,
-//         date: "2024-12-18",
-//         type: "Investment Deposit",
-//         amount: 3000,
-//         status: "Approved",
-//         isDeposit: true,
-//       },
-//       {
-//         id: 3,
-//         date: "2024-12-18",
-//         type: "Investment Deposit",
-//         amount: 1297.0,
-//         status: "Approved",
-//         isDeposit: true,
-//       },
-//       {
-//         id: 4,
-//         date: "2024-12-18",
-//         type: "Investment Withdrawal",
-//         amount: -31209.0,
-//         status: "Approved",
-//         isDeposit: false,
-//       },
-//       {
-//         id: 5,
-//         date: "2024-11-23",
-//         type: "Investment Profit",
-//         amount: 28039.0,
-//         status: "Approved",
-//         isDeposit: true,
-//       },
-//       {
-//         id: 6,
-//         date: "2024-11-23",
-//         type: "Investment Profit",
-//         amount: 2470.0,
-//         status: "Approved",
-//         isDeposit: true,
-//       },
-//       {
-//         id: 7,
-//         date: "2024-10-29",
-//         type: "Investment Withdrawal",
-//         amount: -300.0,
-//         status: "Approved",
-//         isDeposit: false,
-//       },
-//       {
-//         id: 8,
-//         date: "2024-10-29",
-//         type: "Investment Withdrawal",
-//         amount: -300.0,
-//         status: "Approved",
-//         isDeposit: false,
-//       },
-//       {
-//         id: 9,
-//         date: "2024-08-21",
-//         type: "Investment Withdrawal",
-//         amount: -20000.0,
-//         status: "Approved",
-//         isDeposit: false,
-//       },
-//       {
-//         id: 10,
-//         date: "2024-07-02",
-//         type: "Investment Withdrawal",
-//         amount: -300.0,
-//         status: "Approved",
-//         isDeposit: false,
-//       },
-//     ],
-//   };
-// };
-
 function MemberProfilePage() {
   const { id } = useParams();
   // const [member, setMember] = useState(null);
@@ -125,7 +23,7 @@ function MemberProfilePage() {
   const axiosSecure = useAxiosSecure();
   // console.log(id);
   const {
-    data: member,
+    data: member = {},
     isLoading: memberLoading,
     refetch,
   } = useQuery({
@@ -135,8 +33,10 @@ function MemberProfilePage() {
       return data;
     },
   });
-  console.log(member);
+  // console.log(member.result);
 
+  const { result = {}, transactions = [], message = "" } = member || {};
+  // console.log(result);
   // useEffect(() => {
   //   // Simulate API call
   //   const fetchData = async () => {
@@ -155,88 +55,88 @@ function MemberProfilePage() {
   //   fetchData();
   // }, [id, refreshData]);
 
-  const transactions = [
-    {
-      id: 1,
-      date: "2024-02-09",
-      type: "Investment Profit",
-      amount: 910.8,
-      status: "Approved",
-      isDeposit: true,
-    },
-    {
-      id: 2,
-      date: "2024-12-18",
-      type: "Investment Deposit",
-      amount: 3000,
-      status: "Approved",
-      isDeposit: true,
-    },
-    {
-      id: 3,
-      date: "2024-12-18",
-      type: "Investment Deposit",
-      amount: 1297.0,
-      status: "Approved",
-      isDeposit: true,
-    },
-    {
-      id: 4,
-      date: "2024-12-18",
-      type: "Investment Withdrawal",
-      amount: -31209.0,
-      status: "Approved",
-      isDeposit: false,
-    },
-    {
-      id: 5,
-      date: "2024-11-23",
-      type: "Investment Profit",
-      amount: 28039.0,
-      status: "Approved",
-      isDeposit: true,
-    },
-    {
-      id: 6,
-      date: "2024-11-23",
-      type: "Investment Profit",
-      amount: 2470.0,
-      status: "Approved",
-      isDeposit: true,
-    },
-    {
-      id: 7,
-      date: "2024-10-29",
-      type: "Investment Withdrawal",
-      amount: -300.0,
-      status: "Approved",
-      isDeposit: false,
-    },
-    {
-      id: 8,
-      date: "2024-10-29",
-      type: "Investment Withdrawal",
-      amount: -300.0,
-      status: "Approved",
-      isDeposit: false,
-    },
-    {
-      id: 9,
-      date: "2024-08-21",
-      type: "Investment Withdrawal",
-      amount: -20000.0,
-      status: "Approved",
-      isDeposit: false,
-    },
-    {
-      id: 10,
-      date: "2024-07-02",
-      type: "Investment Withdrawal",
-      amount: -300.0,
-      status: "Approved",
-      isDeposit: false,
-    },
-  ];
+  // const transactions = [
+  //   {
+  //     id: 1,
+  //     date: "2024-02-09",
+  //     type: "Investment Profit",
+  //     amount: 910.8,
+  //     status: "Approved",
+  //     isDeposit: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     date: "2024-12-18",
+  //     type: "Investment Deposit",
+  //     amount: 3000,
+  //     status: "Approved",
+  //     isDeposit: true,
+  //   },
+  //   {
+  //     id: 3,
+  //     date: "2024-12-18",
+  //     type: "Investment Deposit",
+  //     amount: 1297.0,
+  //     status: "Approved",
+  //     isDeposit: true,
+  //   },
+  //   {
+  //     id: 4,
+  //     date: "2024-12-18",
+  //     type: "Investment Withdrawal",
+  //     amount: -31209.0,
+  //     status: "Approved",
+  //     isDeposit: false,
+  //   },
+  //   {
+  //     id: 5,
+  //     date: "2024-11-23",
+  //     type: "Investment Profit",
+  //     amount: 28039.0,
+  //     status: "Approved",
+  //     isDeposit: true,
+  //   },
+  //   {
+  //     id: 6,
+  //     date: "2024-11-23",
+  //     type: "Investment Profit",
+  //     amount: 2470.0,
+  //     status: "Approved",
+  //     isDeposit: true,
+  //   },
+  //   {
+  //     id: 7,
+  //     date: "2024-10-29",
+  //     type: "Investment Withdrawal",
+  //     amount: -300.0,
+  //     status: "Approved",
+  //     isDeposit: false,
+  //   },
+  //   {
+  //     id: 8,
+  //     date: "2024-10-29",
+  //     type: "Investment Withdrawal",
+  //     amount: -300.0,
+  //     status: "Approved",
+  //     isDeposit: false,
+  //   },
+  //   {
+  //     id: 9,
+  //     date: "2024-08-21",
+  //     type: "Investment Withdrawal",
+  //     amount: -20000.0,
+  //     status: "Approved",
+  //     isDeposit: false,
+  //   },
+  //   {
+  //     id: 10,
+  //     date: "2024-07-02",
+  //     type: "Investment Withdrawal",
+  //     amount: -300.0,
+  //     status: "Approved",
+  //     isDeposit: false,
+  //   },
+  // ];
   const handleTransactionAdded = () => {
     // Refresh data when a transaction is added
     setRefreshData((prev) => prev + 1);
@@ -262,18 +162,18 @@ function MemberProfilePage() {
               <div className="flex flex-col items-center space-y-4 mb-6">
                 <Avatar className="h-24 w-24 border-4 border-primary/10 object-cover">
                   <img
-                    src={member?.photo || "/placeholder.jpg"}
-                    alt={member.name}
+                    src={result?.photo || "/placeholder.jpg"}
+                    alt={result.name}
                   />
                 </Avatar>
                 <div className="text-center">
-                  <h2 className="text-xl font-bold">{member.name}</h2>
-                  <p className="text-muted-foreground">{member.role}</p>
+                  <h2 className="text-xl font-bold">{result.name}</h2>
+                  <p className="text-muted-foreground">{result.role}</p>
                   <p className="text-sm font-medium mt-1">
                     Investment Amount:{" "}
-                    {/* <span className="font-bold">
-                      $ {member.investmentAmount.toLocaleString()}
-                    </span> */}
+                    <span className="font-bold">
+                      ৳ {totalContribution?.toLocaleString()}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -283,7 +183,7 @@ function MemberProfilePage() {
                 <div className="grid grid-cols-3 gap-2 py-2">
                   <span className="text-muted-foreground">Uid</span>
                   <span className="col-span-2 flex justify-between">
-                    {member?._id}
+                    {result?._id}
                     {/* <Button variant="ghost" size="icon" className="h-5 w-5">
                       <Edit className="h-3.5 w-3.5" />
                     </Button> */}
@@ -292,7 +192,7 @@ function MemberProfilePage() {
                 <div className="grid grid-cols-3 gap-2 py-2">
                   <span className="text-muted-foreground">Name</span>
                   <span className="col-span-2 flex justify-between">
-                    {member?.name}
+                    {result?.name}
                     <Button variant="ghost" size="icon" className="h-5 w-5">
                       <Edit className="h-3.5 w-3.5" />
                     </Button>
@@ -301,13 +201,13 @@ function MemberProfilePage() {
                 <div className="grid grid-cols-3 gap-2 py-2">
                   <span className="text-muted-foreground">Email</span>
                   <span className="col-span-2 flex justify-between">
-                    {member?.email}
+                    {result?.email}
                   </span>
                 </div>
                 {/* <div className="grid grid-cols-3 gap-2 py-2">
                   <span className="text-muted-foreground">Date of Birth</span>
                   <span className="col-span-2 flex justify-between">
-                    {member?.dateOfBirth}
+                    {result?.dateOfBirth}
                     <Button variant="ghost" size="icon" className="h-5 w-5">
                       <Edit className="h-3.5 w-3.5" />
                     </Button>
@@ -316,7 +216,7 @@ function MemberProfilePage() {
                 <div className="grid grid-cols-3 gap-2 py-2">
                   <span className="text-muted-foreground">Gender</span>
                   <span className="col-span-2 flex justify-between">
-                    {member?.gender}
+                    {result?.gender}
                     <Button variant="ghost" size="icon" className="h-5 w-5">
                       <Edit className="h-3.5 w-3.5" />
                     </Button>
@@ -325,7 +225,7 @@ function MemberProfilePage() {
                 <div className="grid grid-cols-3 gap-2 py-2">
                   <span className="text-muted-foreground">Mobile</span>
                   <span className="col-span-2 flex justify-between">
-                    {member?.phoneNumber}
+                    {result?.phoneNumber}
                     <Button variant="ghost" size="icon" className="h-5 w-5">
                       <Edit className="h-3.5 w-3.5" />
                     </Button>
@@ -334,8 +234,8 @@ function MemberProfilePage() {
                 <div className="grid grid-cols-3 gap-2 py-2">
                   <span className="text-muted-foreground">Last Login Date</span>
                   <span className="col-span-2 flex justify-between">
-                    {member?.lastLoginAt
-                      ? format(new Date(member.lastLoginAt), "dd MMM yyyy")
+                    {result?.lastLoginAt
+                      ? format(new Date(result.lastLoginAt), "dd MMM yyyy")
                       : "N/A"}
                     <Button variant="ghost" size="icon" className="h-5 w-5">
                       <Edit className="h-3.5 w-3.5" />
@@ -345,8 +245,8 @@ function MemberProfilePage() {
                 <div className="grid grid-cols-3 gap-2 py-2">
                   <span className="text-muted-foreground">Join Date</span>
                   <span className="col-span-2 flex justify-between">
-                    {member?.createdAt
-                      ? format(new Date(member.createdAt), "dd MMM yyyy")
+                    {result?.createdAt
+                      ? format(new Date(result.createdAt), "dd MMM yyyy")
                       : "N/A"}
                     <Button variant="ghost" size="icon" className="h-5 w-5">
                       <Edit className="h-3.5 w-3.5" />
@@ -356,15 +256,8 @@ function MemberProfilePage() {
               </div>
 
               <div className="flex justify-center space-x-4 my-6">
-                <DepositModal
-                  member={member}
-                  refetch={refetch}
-                  onTransactionAdded={handleTransactionAdded}
-                />
-                <WithdrawModal
-                  member={member}
-                  onTransactionAdded={handleTransactionAdded}
-                />
+                <DepositModal member={result} refetch={refetch} />
+                <WithdrawModal member={result} refetch={refetch} />
               </div>
             </CardContent>
           </Card>

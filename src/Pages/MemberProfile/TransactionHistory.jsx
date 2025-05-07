@@ -22,20 +22,22 @@ function TransactionHistory({ transactions }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions.map((transaction) => (
-            <TableRow key={transaction.id}>
+          {transactions?.map((transaction) => (
+            <TableRow key={transaction._id}>
               <TableCell className="font-medium">{transaction.date}</TableCell>
               <TableCell>{transaction.type}</TableCell>
               <TableCell>
                 <div className="flex items-center">
-                  {transaction.isDeposit ? (
+                  {transaction?.type === "Deposit" ? (
                     <ArrowUpCircle className="h-4 w-4 mr-2 text-green-500" />
                   ) : (
                     <ArrowDownCircle className="h-4 w-4 mr-2 text-red-500" />
                   )}
                   <span
                     className={
-                      transaction.isDeposit ? "text-green-600" : "text-red-600"
+                      transaction?.type === "Deposit"
+                        ? "text-green-600"
+                        : "text-red-600"
                     }
                   >
                     ৳ {Math.abs(transaction.amount).toLocaleString()}
@@ -43,7 +45,9 @@ function TransactionHistory({ transactions }) {
                 </div>
               </TableCell>
               <TableCell>
-                <span className="text-green-600">Reconciled</span>
+                <span className="text-green-600">
+                  {transaction?.approvedBy}
+                </span>
               </TableCell>
             </TableRow>
           ))}

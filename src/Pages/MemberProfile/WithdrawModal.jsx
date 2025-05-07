@@ -15,16 +15,19 @@ import { Label } from "@/components/ui/label";
 import { ArrowDownCircle } from "lucide-react";
 import { toast } from "sonner";
 import { addTransaction } from "@/api/transactions";
+import useAxiosSecure from "@/hooks/useAxiosSecure";
+import { useAuthUser } from "@/redux/auth/authAction";
 
-function WithdrawModal({ memberId, onTransactionAdded }) {
+function WithdrawModal({ member, refetch }) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const axiosSecure = useAxiosSecure();
+  const user = useAuthUser();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!amount || Number.parseFloat(amount) <= 0) {
       toast.error("Please enter a valid amount greater than 0");
       return;
@@ -33,25 +36,30 @@ function WithdrawModal({ memberId, onTransactionAdded }) {
     setIsSubmitting(true);
 
     try {
-      await addTransaction({
-        memberId,
-        amount: -Number.parseFloat(amount), // Negative amount for withdrawal
+      const transaction = {
+        memberName: member.name,
+        memberEmail: member.email,
+        memberId: member._id,
+        amount: Number.parseFloat(amount),
+        type: "Withdraw",
         date,
-        type: "Investment Withdrawal",
-        isDeposit: false,
+        approvedBy: user.displayName,
+        approvedByEmail: user.email,
+      };
+
+      toast.promise(axiosSecure.post("/transactions", transaction), {
+        loading: "Loading transaction...",
+        success: () => {
+          refetch();
+          setOpen(false);
+          setAmount("");
+          return (
+            <b>
+              Successfully withdraw {Number.parseFloat(amount).toLocaleString()}
+            </b>
+          );
+        },
       });
-
-      toast.success(
-        `Successfully withdrawn $${Number.parseFloat(amount).toLocaleString()}`
-      );
-
-      setOpen(false);
-      setAmount("");
-
-      // Notify parent component to refresh data
-      if (onTransactionAdded) {
-        onTransactionAdded();
-      }
     } catch (error) {
       toast.error("Failed to process withdrawal. Please try again.");
     } finally {
@@ -62,7 +70,7 @@ function WithdrawModal({ memberId, onTransactionAdded }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive">
+        <Button className={"cursor-pointer"} variant="destructive">
           <ArrowDownCircle className="mr-2 h-4 w-4" /> Withdraw
         </Button>
       </DialogTrigger>
