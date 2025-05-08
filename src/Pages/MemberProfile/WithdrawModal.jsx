@@ -18,7 +18,7 @@ import { addTransaction } from "@/api/transactions";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useAuthUser } from "@/redux/auth/authAction";
 
-function WithdrawModal({ member, refetch }) {
+function WithdrawModal({ member, refetch, totalContribution }) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -31,6 +31,9 @@ function WithdrawModal({ member, refetch }) {
     if (!amount || Number.parseFloat(amount) <= 0) {
       toast.error("Please enter a valid amount greater than 0");
       return;
+    }
+    if (totalContribution < amount) {
+      return toast.error("Don't have enough money to deposit");
     }
 
     setIsSubmitting(true);

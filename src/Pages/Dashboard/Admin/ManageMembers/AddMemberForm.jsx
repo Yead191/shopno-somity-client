@@ -511,11 +511,11 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
                   <Input
                     id="copy-email"
                     readOnly
-                    value={modalData.email}
+                    value={modalData?.email}
                     className="pr-10"
                   />
                   <button
-                    onClick={() => copyToClipboard(modalData.email, "Email")}
+                    onClick={() => copyToClipboard(modalData?.email, "Email")}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-gray-700"
                   >
                     <FaCopy />
@@ -535,12 +535,12 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
                   <Input
                     id="copy-password"
                     readOnly
-                    value={modalData.password}
+                    value={modalData?.password}
                     className="pr-10"
                   />
                   <button
                     onClick={() =>
-                      copyToClipboard(modalData.password, "Password")
+                      copyToClipboard(modalData?.password, "Password")
                     }
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-gray-700"
                   >

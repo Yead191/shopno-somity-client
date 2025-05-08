@@ -257,7 +257,11 @@ function MemberProfilePage() {
 
               <div className="flex justify-center space-x-4 my-6">
                 <DepositModal member={result} refetch={refetch} />
-                <WithdrawModal member={result} refetch={refetch} />
+                <WithdrawModal
+                  member={result}
+                  refetch={refetch}
+                  totalContribution={totalContribution}
+                />
               </div>
             </CardContent>
           </Card>

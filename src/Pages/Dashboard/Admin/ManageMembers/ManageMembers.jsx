@@ -100,7 +100,7 @@ const ManageMembers = () => {
                 <SelectItem value={"50001-100000"}>
                   {"50,001 - 100,000 BDT"}
                 </SelectItem>
-                <SelectItem value={"100001+"}>{"100,001+ BDT"}</SelectItem>
+                <SelectItem value={"100001-1000000"}>{"100,001+ BDT"}</SelectItem>
               </SelectContent>
             </Select>
           </div>
