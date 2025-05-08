@@ -17,11 +17,19 @@ import { toast } from "sonner";
 import { addTransaction } from "@/api/transactions";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useAuthUser } from "@/redux/auth/authAction";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function WithdrawModal({ member, refetch, totalContribution }) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const axiosSecure = useAxiosSecure();
   const user = useAuthUser();
@@ -35,7 +43,10 @@ function WithdrawModal({ member, refetch, totalContribution }) {
     if (totalContribution < amount) {
       return toast.error("Don't have enough money to deposit");
     }
-
+    if (!paymentMethod) {
+      toast.error("Please select a payment method");
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -46,6 +57,7 @@ function WithdrawModal({ member, refetch, totalContribution }) {
         amount: Number.parseFloat(amount),
         type: "Withdraw",
         date,
+        paymentMethod,
         approvedBy: user.displayName,
         approvedByEmail: user.email,
       };
@@ -86,8 +98,8 @@ function WithdrawModal({ member, refetch, totalContribution }) {
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="date" className="text-right">
+            <div className="grid grid-cols-6 items-center gap-4">
+              <Label htmlFor="date" className="text-right col-span-2 ">
                 Date
               </Label>
               <Input
@@ -95,13 +107,13 @@ function WithdrawModal({ member, refetch, totalContribution }) {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="col-span-3"
+                className="col-span-4"
                 required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="amount" className="text-right">
-                Amount ($)
+            <div className="grid grid-cols-6 items-center gap-4">
+              <Label htmlFor="amount" className="text-right col-span-2">
+                Amount (৳)
               </Label>
               <Input
                 id="amount"
@@ -109,11 +121,32 @@ function WithdrawModal({ member, refetch, totalContribution }) {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="col-span-3"
+                className="col-span-4"
                 min="0"
                 step="0.01"
                 required
               />
+            </div>
+            <div className="flex  items-center gap-4">
+              <Label htmlFor="paymentMethod" className="text-right ">
+                Payment Method
+              </Label>
+              <Select
+                id="paymentMethod"
+                value={paymentMethod}
+                onValueChange={setPaymentMethod}
+                className="w-full"
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                  <SelectItem value="Mobile Banking">Mobile Banking</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>

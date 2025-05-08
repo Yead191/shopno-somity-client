@@ -14,6 +14,7 @@ import { calculateTotalContribution } from "@/utils/helpers";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import Spinner from "@/components/Spinner";
 
 function MemberProfilePage() {
   const { id } = useParams();
@@ -143,7 +144,7 @@ function MemberProfilePage() {
   };
 
   if (memberLoading) {
-    return <div className="container mx-auto py-6">Loading...</div>;
+    return <Spinner />;
   }
 
   if (!member) {
@@ -170,7 +171,7 @@ function MemberProfilePage() {
                   <h2 className="text-xl font-bold">{result.name}</h2>
                   <p className="text-muted-foreground">{result.role}</p>
                   <p className="text-sm font-medium mt-1">
-                    Investment Amount:{" "}
+                    Current Balance:{" "}
                     <span className="font-bold">
                       ৳ {totalContribution?.toLocaleString()}
                     </span>

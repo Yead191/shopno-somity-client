@@ -1,4 +1,5 @@
 import {
+  BadgeDollarSign,
   ChartNoAxesCombined,
   CreditCard,
   FileSpreadsheet,
@@ -23,11 +24,12 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { GiMedicines } from "react-icons/gi";
-import { MdManageHistory } from "react-icons/md";
+import { MdManageHistory, MdReport } from "react-icons/md";
 import { RiAdvertisementFill } from "react-icons/ri";
 
 import { Separator } from "../ui/separator";
 import { Link, NavLink } from "react-router-dom";
+import { NavUser } from "./Nav-user";
 
 const items = [
   {
@@ -42,11 +44,10 @@ const items = [
     icon: UserRoundCog,
     role: "admin",
   },
-
   {
-    title: "Manage Banner",
-    url: "/dashboard/manage/banners",
-    icon: TicketSlash,
+    title: "Transaction Report",
+    url: "/dashboard/admin/transaction-report",
+    icon: BadgeDollarSign,
     role: "admin",
   },
   {
@@ -110,7 +111,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>{/* <NavUser /> */}</SidebarFooter>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
     </Sidebar>
   );
 }

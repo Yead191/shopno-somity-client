@@ -12,6 +12,7 @@ import { setLoading, setUser } from "@/redux/auth/authSlice";
 import auth from "@/firebase/firebase.init";
 import ManageUsers from "@/Pages/Dashboard/Admin/ManageMembers/ManageMembers";
 import MemberProfilePage from "@/Pages/MemberProfile/MemberProfile";
+import TransactionDashboard from "@/Pages/Dashboard/Admin/TransactionDashboard/TransactionDashboard";
 
 const Router = () => {
   const dispatch = useDispatch();
@@ -69,6 +70,7 @@ const Router = () => {
         {/* dashboard routes */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route path="admin/manage-users" element={<ManageUsers />} />
+          <Route path="admin/transaction-report" element={<TransactionDashboard />} />
           <Route path="member-profile/:id" element={<MemberProfilePage />} />
         </Route>
       </Routes>
