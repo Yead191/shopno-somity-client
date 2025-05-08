@@ -27,6 +27,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -39,6 +40,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import Spinner from "@/components/Spinner";
 
 // Enhanced transaction data with additional fields
 const transactionData = [
@@ -176,7 +180,7 @@ function TransactionReport() {
   // const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
@@ -184,6 +188,7 @@ function TransactionReport() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [isConfirming, setIsConfirming] = useState(false);
   const axiosSecure = useAxiosSecure();
 
   // useEffect(() => {
@@ -191,103 +196,109 @@ function TransactionReport() {
   //   setTransactions(transactionData);
   //   setFilteredTransactions(transactionData);
   // }, []);
-  const { data: transactions = [], isLoading: transactionLoading } = useQuery({
-    queryKey: ["transactions"],
+  const {
+    data: transactions = [],
+    isLoading: transactionLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["transactions", searchTerm, typeFilter],
     queryFn: async () => {
-      const { data } = await axiosSecure.get("/transactions");
+      const { data } = await axiosSecure.get(
+        `/transactions?search=${searchTerm}&type=${typeFilter}`
+      );
       return data;
     },
   });
 
-  useEffect(() => {
-    let result = [...transactions];
+  // useEffect(() => {
+  //   let result = [...transactions];
 
-    // Apply search filter
-    if (searchTerm) {
-      result = result.filter(
-        (transaction) =>
-          transaction.memberName
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          transaction.reference
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          transaction.description
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-      );
-    }
+  //   // Apply search filter
+  //   if (searchTerm) {
+  //     result = result.filter(
+  //       (transaction) =>
+  //         transaction.memberName
+  //           .toLowerCase()
+  //           .includes(searchTerm.toLowerCase()) ||
+  //         transaction.reference
+  //           .toLowerCase()
+  //           .includes(searchTerm.toLowerCase()) ||
+  //         transaction.description
+  //           .toLowerCase()
+  //           .includes(searchTerm.toLowerCase())
+  //     );
+  //   }
 
-    // Apply type filter
-    if (typeFilter !== "all") {
-      result = result.filter((transaction) => transaction.type === typeFilter);
-    }
+  //   // Apply type filter
+  //   if (typeFilter !== "all") {
+  //     result = result.filter((transaction) => transaction.type === typeFilter);
+  //   }
 
-    // Apply status filter
-    if (statusFilter !== "all") {
-      result = result.filter(
-        (transaction) => transaction.status === statusFilter
-      );
-    }
+  //   // Apply status filter
+  //   if (statusFilter !== "all") {
+  //     result = result.filter(
+  //       (transaction) => transaction.status === statusFilter
+  //     );
+  //   }
 
-    // Apply category filter
-    if (categoryFilter !== "all") {
-      result = result.filter(
-        (transaction) => transaction.category === categoryFilter
-      );
-    }
+  //   // Apply category filter
+  //   if (categoryFilter !== "all") {
+  //     result = result.filter(
+  //       (transaction) => transaction.category === categoryFilter
+  //     );
+  //   }
 
-    // Apply date range filter
-    if (startDate && endDate) {
-      result = result.filter(
-        (transaction) =>
-          new Date(transaction.date) >= new Date(startDate) &&
-          new Date(transaction.date) <= new Date(endDate)
-      );
-    }
+  //   // Apply date range filter
+  //   if (startDate && endDate) {
+  //     result = result.filter(
+  //       (transaction) =>
+  //         new Date(transaction.date) >= new Date(startDate) &&
+  //         new Date(transaction.date) <= new Date(endDate)
+  //     );
+  //   }
 
-    // Apply sorting
-    result.sort((a, b) => {
-      if (sortBy === "date") {
-        return sortOrder === "asc"
-          ? new Date(a.date) - new Date(b.date)
-          : new Date(b.date) - new Date(a.date);
-      } else if (sortBy === "amount") {
-        return sortOrder === "asc" ? a.amount - b.amount : b.amount - a.amount;
-      } else if (sortBy === "memberName") {
-        return sortOrder === "asc"
-          ? a.memberName.localeCompare(b.memberName)
-          : b.memberName.localeCompare(a.memberName);
-      }
-      return 0;
-    });
+  //   // Apply sorting
+  //   result.sort((a, b) => {
+  //     if (sortBy === "date") {
+  //       return sortOrder === "asc"
+  //         ? new Date(a.date) - new Date(b.date)
+  //         : new Date(b.date) - new Date(a.date);
+  //     } else if (sortBy === "amount") {
+  //       return sortOrder === "asc" ? a.amount - b.amount : b.amount - a.amount;
+  //     } else if (sortBy === "memberName") {
+  //       return sortOrder === "asc"
+  //         ? a.memberName.localeCompare(b.memberName)
+  //         : b.memberName.localeCompare(a.memberName);
+  //     }
+  //     return 0;
+  //   });
 
-    setFilteredTransactions(result);
-  }, [
-    transactions,
-    searchTerm,
-    typeFilter,
-    statusFilter,
-    categoryFilter,
-    sortBy,
-    sortOrder,
-    startDate,
-    endDate,
-  ]);
+  //   setFilteredTransactions(result);
+  // }, [
+  //   transactions,
+  //   searchTerm,
+  //   typeFilter,
+  //   statusFilter,
+  //   categoryFilter,
+  //   sortBy,
+  //   sortOrder,
+  //   startDate,
+  //   endDate,
+  // ]);
 
-  const totalDeposits = filteredTransactions
+  const totalDeposits = transactions
     .filter((t) => t.type === "Deposit")
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const totalWithdrawals = filteredTransactions
-    .filter((t) => t.type === "Withdrawal")
+  const totalWithdrawals = transactions
+    .filter((t) => t.type === "Withdraw")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const balance = totalDeposits - totalWithdrawals;
 
   const resetFilters = () => {
     setSearchTerm("");
-    setTypeFilter("all");
+    setTypeFilter("");
     setStatusFilter("all");
     setCategoryFilter("all");
     setStartDate("");
@@ -322,6 +333,59 @@ function TransactionReport() {
     }
   };
 
+  const handleDelete = async (id) => {
+    console.log(id);
+    // Show confirmation toast
+    setIsConfirming(true);
+    const toastId = toast(
+      <div>
+        <p>Are you sure you want to delete this transaction?</p>
+        <div className="flex gap-2 items-center mt-2">
+          <Button
+            size={"sm"}
+            onClick={() => {
+              toast.dismiss(toastId);
+              setIsConfirming(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={async () => {
+              try {
+                // await axiosSecure.delete(`/transactions/${transactionId}`);
+                // toast.success("Transaction deleted successfully");
+                toast.promise(
+                  axiosSecure.delete(`/transactions/delete/${id}`),
+                  {
+                    loading: "Deleting Transaction...",
+                    success: () => {
+                      refetch();
+                      toast.dismiss(toastId);
+                      return <b>Transaction deleted successfully!</b>;
+                    },
+                  }
+                );
+              } catch (error) {
+                toast.error("Failed to delete transaction. Please try again.");
+              } finally {
+                setIsConfirming(false);
+              }
+            }}
+          >
+            Confirm Delete
+          </Button>
+        </div>
+      </div>,
+      {
+        duration: 4000,
+        onDismiss: () => setIsConfirming(false),
+        onAutoClose: () => setIsConfirming(false),
+      }
+    );
+  };
   return (
     <div className="container mx-auto py-6 space-y-6 print:py-0">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
@@ -360,7 +424,7 @@ function TransactionReport() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Deposits</p>
                 <h3 className="text-2xl font-bold text-green-600">
-                  ${totalDeposits.toLocaleString()}
+                  ৳{totalDeposits.toLocaleString()}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-green-100">
@@ -377,7 +441,7 @@ function TransactionReport() {
                   Total Withdrawals
                 </p>
                 <h3 className="text-2xl font-bold text-red-600">
-                  ${totalWithdrawals.toLocaleString()}
+                  ৳{totalWithdrawals.toLocaleString()}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-red-100">
@@ -392,7 +456,7 @@ function TransactionReport() {
               <div>
                 <p className="text-sm text-muted-foreground">Current Balance</p>
                 <h3 className="text-2xl font-bold">
-                  ${balance.toLocaleString()}
+                  ৳{balance.toLocaleString()}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-blue-100">
@@ -429,9 +493,8 @@ function TransactionReport() {
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="Deposit">Deposit</SelectItem>
-                  <SelectItem value="Withdrawal">Withdrawal</SelectItem>
+                  <SelectItem value="Withdraw">Withdrawal</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -541,172 +604,190 @@ function TransactionReport() {
         <CardHeader className="pb-0">
           <CardTitle>Transactions</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4">Date</th>
-                  <th className="text-left p-4">Member</th>
-                  <th className="text-left p-4">Type</th>
-                  <th className="text-left p-4">Amount</th>
-                  <th className="text-left p-4">P. Method</th>
-                  <th className="text-left p-4 print:hidden">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTransactions.length === 0 ? (
-                  <tr>
-                    <td colSpan="8" className="text-center p-4">
-                      No transactions found
-                    </td>
+        {transactionLoading ? (
+          <Spinner />
+        ) : (
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-4">Date</th>
+                    <th className="text-left p-4">Member</th>
+                    <th className="text-left p-4">Type</th>
+                    <th className="text-left p-4">Amount</th>
+                    <th className="text-left p-4">P. Method</th>
+                    <th className="text-left p-4 print:hidden">Actions</th>
                   </tr>
-                ) : (
-                  filteredTransactions.map((transaction) => (
-                    <tr
-                      key={transaction._id}
-                      className="border-b hover:bg-muted/50"
-                    >
-                      <td className="p-4">{transaction?.date}</td>
-                      <td className="p-4">{transaction?.memberName}</td>
-                      <td className="p-4">{transaction?.type}</td>
-                      <td className="p-4">
-                        <div className="flex items-center">
-                          {transaction.type === "Deposit" ? (
-                            <ArrowUpCircle className="h-4 w-4 mr-2 text-green-500" />
-                          ) : (
-                            <ArrowDownCircle className="h-4 w-4 mr-2 text-red-500" />
-                          )}
-                          <span
-                            className={
-                              transaction.type === "Deposit"
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }
-                          >
-                            ${transaction.amount.toLocaleString()}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <Badge
-                          className={getStatusBadgeColor(
-                            transaction?.paymentMethod
-                          )}
-                        >
-                          {transaction?.paymentMethod}
-                        </Badge>
-                      </td>
-                      <td className="p-4 print:hidden">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() =>
-                                viewTransactionDetails(transaction)
-                              }
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[500px]">
-                            <DialogHeader>
-                              <DialogTitle>Transaction Details</DialogTitle>
-                            </DialogHeader>
-                            {selectedTransaction && (
-                              <div className="grid gap-4 py-4">
-                                <div className="flex justify-between items-center">
-                                  <h3 className="text-lg font-medium">
-                                    {selectedTransaction.type}
-                                  </h3>
-                                  <Badge
-                                    className={getStatusBadgeColor(
-                                      selectedTransaction.status
-                                    )}
-                                  >
-                                    {selectedTransaction.status}
-                                  </Badge>
-                                </div>
-                                <div className="text-center my-2">
-                                  <p className="text-sm text-muted-foreground">
-                                    Amount
-                                  </p>
-                                  <p
-                                    className={`text-2xl font-bold ${
-                                      selectedTransaction.type === "Deposit"
-                                        ? "text-green-600"
-                                        : "text-red-600"
-                                    }`}
-                                  >
-                                    $
-                                    {selectedTransaction.amount.toLocaleString()}
-                                  </p>
-                                </div>
-                                <Separator />
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div>
-                                    <p className="text-sm text-muted-foreground">
-                                      Date
-                                    </p>
-                                    <p>{selectedTransaction.date}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm text-muted-foreground">
-                                      Reference
-                                    </p>
-                                    <p>{selectedTransaction.reference}</p>
-                                  </div>
-                                </div>
-                                <div>
-                                  <p className="text-sm text-muted-foreground">
-                                    Description
-                                  </p>
-                                  <p>{selectedTransaction.description}</p>
-                                </div>
-                                <div>
-                                  <p className="text-sm text-muted-foreground">
-                                    Category
-                                  </p>
-                                  <p>{selectedTransaction.category}</p>
-                                </div>
-                                <div>
-                                  <p className="text-sm text-muted-foreground">
-                                    Payment Method
-                                  </p>
-                                  <p>{selectedTransaction.method}</p>
-                                </div>
-                                <Separator />
-                                <div>
-                                  <p className="text-sm text-muted-foreground">
-                                    Member
-                                  </p>
-                                  <p>{selectedTransaction.memberName}</p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {selectedTransaction.memberEmail}
-                                  </p>
-                                </div>
-                                <div>
-                                  <p className="text-sm text-muted-foreground">
-                                    Approved By
-                                  </p>
-                                  <p>{selectedTransaction.approvedBy}</p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {selectedTransaction.approvedByEmail}
-                                  </p>
-                                </div>
-                              </div>
-                            )}
-                          </DialogContent>
-                        </Dialog>
+                </thead>
+                <tbody>
+                  {transactions.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" className="text-center p-4">
+                        No transactions found
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
+                  ) : (
+                    transactions?.map((transaction) => (
+                      <tr
+                        key={transaction._id}
+                        className="border-b hover:bg-muted/50"
+                      >
+                        <td className="p-4">{transaction?.date}</td>
+                        <td className="p-4">{transaction?.memberName}</td>
+                        <td className="p-4">{transaction?.type}</td>
+                        <td className="p-4">
+                          <div className="flex items-center">
+                            {transaction.type === "Deposit" ? (
+                              <ArrowUpCircle className="h-4 w-4 mr-2 text-green-500" />
+                            ) : (
+                              <ArrowDownCircle className="h-4 w-4 mr-2 text-red-500" />
+                            )}
+                            <span
+                              className={
+                                transaction.type === "Deposit"
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }
+                            >
+                              ৳{transaction.amount.toLocaleString()}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <Badge
+                            className={getStatusBadgeColor(
+                              transaction?.paymentMethod
+                            )}
+                          >
+                            {transaction?.paymentMethod}
+                          </Badge>
+                        </td>
+                        {/* <td className="p-4 print:hidden">
+                        <Link
+                          to={`/dashboard/member-profile/${transaction.memberId}`}
+                        >
+                          <Button variant="ghost" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </td> */}
+                        <td className="p-4 print:hidden">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  viewTransactionDetails(transaction)
+                                }
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[500px]">
+                              <DialogHeader>
+                                <DialogTitle>Transaction Details</DialogTitle>
+                              </DialogHeader>
+                              {selectedTransaction && (
+                                <div className="grid gap-4 py-4">
+                                  <div className="flex justify-between items-center">
+                                    <h3 className="text-lg font-medium">
+                                      {selectedTransaction.type}
+                                    </h3>
+                                    <Badge
+                                      className={getStatusBadgeColor(
+                                        selectedTransaction.paymentMethod
+                                      )}
+                                    >
+                                      {selectedTransaction.paymentMethod}
+                                    </Badge>
+                                  </div>
+                                  <div className="text-center my-2">
+                                    <p className="text-sm text-muted-foreground">
+                                      Amount
+                                    </p>
+                                    <p
+                                      className={`text-2xl font-bold ${
+                                        selectedTransaction.type === "Deposit"
+                                          ? "text-green-600"
+                                          : "text-red-600"
+                                      }`}
+                                    >
+                                      ৳
+                                      {selectedTransaction.amount.toLocaleString()}
+                                    </p>
+                                  </div>
+                                  <Separator />
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <p className="text-sm text-muted-foreground">
+                                        Date
+                                      </p>
+                                      <p>{selectedTransaction?.date}</p>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-muted-foreground">
+                                      Type
+                                    </p>
+                                    <p>{selectedTransaction?.type}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-muted-foreground">
+                                      Payment Method
+                                    </p>
+                                    <p>{selectedTransaction.paymentMethod}</p>
+                                  </div>
+                                  <Separator />
+                                  <div>
+                                    <p className="text-sm text-muted-foreground">
+                                      Member
+                                    </p>
+                                    <p>{selectedTransaction?.memberName}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {selectedTransaction.memberEmail}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-muted-foreground">
+                                      Approved By
+                                    </p>
+                                    <p>{selectedTransaction.approvedBy}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {selectedTransaction.approvedByEmail}
+                                    </p>
+                                  </div>
+                                  <DialogFooter>
+                                    <Link
+                                      to={`/dashboard/member-profile/${selectedTransaction.memberId}`}
+                                    >
+                                      <Button variant={"outline"}>
+                                        View Profile
+                                      </Button>
+                                    </Link>
+                                    <Button
+                                      onClick={() =>
+                                        handleDelete(selectedTransaction._id)
+                                      }
+                                      variant={"destructive"}
+                                    >
+                                      Delete
+                                    </Button>
+                                  </DialogFooter>
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        )}
       </Card>
     </div>
   );
