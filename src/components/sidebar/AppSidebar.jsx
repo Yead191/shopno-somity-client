@@ -33,8 +33,8 @@ import { NavUser } from "./Nav-user";
 
 const items = [
   {
-    title: "Statics",
-    url: "/dashboard/admin",
+    title: "Statistics",
+    url: "/dashboard/admin/statistics",
     icon: ChartNoAxesCombined,
     role: "admin",
   },
@@ -68,7 +68,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <h2 className="font-bold my-4">
-            <div className="flex items-center gap-1" onClick={toggleSidebar}>
+            <Link to={"/"} className="flex items-center gap-1">
               <img src={logo} alt="logo" className="w-[45px] -mt-0.5" />
               <h4
                 className={`text-2xl font-semibold ${
@@ -78,7 +78,7 @@ export function AppSidebar() {
                 স্বপ্নস্বাক্ষর{" "}
                 <span className="text-[#3B9DF8] ml-1">সমিতি</span>
               </h4>
-            </div>
+            </Link>
           </h2>
           <SidebarGroupContent>
             <SidebarMenu id="sidebarmenus">

@@ -1,4 +1,7 @@
+import Spinner from "@/components/Spinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import useAxiosSecure from "@/hooks/useAxiosSecure";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowDownCircle,
   ArrowUpCircle,
@@ -6,37 +9,30 @@ import {
   CreditCard,
 } from "lucide-react";
 
-// This would come from your API in a real application
-const summaryData = {
-  totalDeposits: 5700,
-  totalWithdrawals: 1800,
-  balance: 3900,
-  memberCount: 4,
-  depositsByCategory: [
-    { category: "Membership Fee", amount: 2700 },
-    { category: "Investment", amount: 3000 },
-    { category: "Penalty", amount: 250 },
-  ],
-  withdrawalsByCategory: [
-    { category: "Withdrawal", amount: 300 },
-    { category: "Loan", amount: 1500 },
-  ],
-  depositsByMethod: [
-    { method: "Cash", amount: 800 },
-    { method: "Bank Transfer", amount: 3000 },
-    { method: "Mobile Banking", amount: 1000 },
-    { method: "Check", amount: 1200 },
-  ],
-  monthlyTotals: [
-    { month: "January", deposits: 0, withdrawals: 0 },
-    { month: "February", deposits: 0, withdrawals: 0 },
-    { month: "March", deposits: 0, withdrawals: 0 },
-    { month: "April", deposits: 1250, withdrawals: 1500 },
-    { month: "May", deposits: 4700, withdrawals: 300 },
-  ],
-};
-
 function TransactionSummary() {
+  const axiosSecure = useAxiosSecure();
+  const { data: summaryData = {}, isLoading } = useQuery({
+    queryKey: ["summaryData"],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get("/transactions/summary");
+      return data;
+    },
+  });
+
+  // Helper to safely format numbers
+  const formatNumber = (value) => {
+    return typeof value === "number" ? value.toLocaleString() : "0";
+  };
+
+  // Helper to calculate progress bar width safely
+  const getProgressWidth = (value, total) => {
+    if (!total || total === 0) return "0%";
+    return `${(value / total) * 100}%`;
+  };
+
+  if (isLoading) {
+    return <Spinner />
+  }
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -46,7 +42,7 @@ function TransactionSummary() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Deposits</p>
                 <h3 className="text-2xl font-bold text-green-600">
-                  ${summaryData.totalDeposits.toLocaleString()}
+                  ৳{formatNumber(summaryData.totalDeposits)}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-green-100">
@@ -64,7 +60,7 @@ function TransactionSummary() {
                   Total Withdrawals
                 </p>
                 <h3 className="text-2xl font-bold text-red-600">
-                  ${summaryData.totalWithdrawals.toLocaleString()}
+                  ৳{formatNumber(summaryData.totalWithdrawals)}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-red-100">
@@ -80,7 +76,7 @@ function TransactionSummary() {
               <div>
                 <p className="text-sm text-muted-foreground">Current Balance</p>
                 <h3 className="text-2xl font-bold">
-                  ${summaryData.balance.toLocaleString()}
+                  ৳{formatNumber(summaryData.balance)}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-blue-100">
@@ -96,7 +92,7 @@ function TransactionSummary() {
               <div>
                 <p className="text-sm text-muted-foreground">Active Members</p>
                 <h3 className="text-2xl font-bold">
-                  {summaryData.memberCount}
+                  {formatNumber(summaryData.memberCount)}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-purple-100">
@@ -110,18 +106,18 @@ function TransactionSummary() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Deposits by Category</CardTitle>
+            <CardTitle>Deposits by Payment Method</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {summaryData.depositsByCategory.map((item, index) => (
+              {(summaryData.depositsByCategory || []).map((item, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                    <span>{item.category}</span>
+                    <span>{item.category ? item.category : "N/A"}</span>
                   </div>
                   <span className="font-medium">
-                    ${item.amount.toLocaleString()}
+                    ৳{formatNumber(item.amount)}
                   </span>
                 </div>
               ))}
@@ -131,18 +127,18 @@ function TransactionSummary() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Withdrawals by Category</CardTitle>
+            <CardTitle>Withdrawals by Payment Method</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {summaryData.withdrawalsByCategory.map((item, index) => (
+              {(summaryData.withdrawalsByCategory || []).map((item, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                    <span>{item.category}</span>
+                    <span>{item.category ? item.category : "N/A" }</span>
                   </div>
                   <span className="font-medium">
-                    ${item.amount.toLocaleString()}
+                    ৳{formatNumber(item.amount)}
                   </span>
                 </div>
               ))}
@@ -157,11 +153,13 @@ function TransactionSummary() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {summaryData.depositsByMethod.map((item, index) => (
+            {(summaryData.depositsByMethod || []).map((item, index) => (
               <div key={index} className="bg-muted rounded-lg p-4">
-                <p className="text-sm text-muted-foreground">{item.method}</p>
+                <p className="text-sm text-muted-foreground">
+                  {item.method || "Unknown"}
+                </p>
                 <p className="text-xl font-bold mt-1">
-                  ${item.amount.toLocaleString()}
+                  ৳{formatNumber(item.amount)}
                 </p>
               </div>
             ))}
@@ -175,21 +173,38 @@ function TransactionSummary() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {summaryData.monthlyTotals.map((item, index) => (
-              <div key={index} className="flex items-center">
-                <div className="w-24 flex-shrink-0">{item.month}</div>
-                <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-green-500"
-                    style={{
-                      width: `${
-                        (item.deposits / summaryData.totalDeposits) * 100
-                      }%`,
-                    }}
-                  ></div>
-                </div>
-                <div className="w-24 text-right">
-                  ${item.deposits.toLocaleString()}
+            {(summaryData.monthlyTotals || []).map((item, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center">
+                  <div className="w-24 flex-shrink-0">{item.month}</div>
+                  <div className="flex-1 space-y-1">
+                    <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-green-500"
+                        style={{
+                          width: getProgressWidth(
+                            item.deposits,
+                            summaryData.totalDeposits
+                          ),
+                        }}
+                      ></div>
+                    </div>
+                    <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-red-500"
+                        style={{
+                          width: getProgressWidth(
+                            item.withdrawals,
+                            summaryData.totalWithdrawals
+                          ),
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                  <div className="w-24 text-right">
+                    <div>৳{formatNumber(item.deposits)}</div>
+                    <div>৳{formatNumber(item.withdrawals)}</div>
+                  </div>
                 </div>
               </div>
             ))}

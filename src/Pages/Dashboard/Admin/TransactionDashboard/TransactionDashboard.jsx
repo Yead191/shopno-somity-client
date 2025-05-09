@@ -11,7 +11,7 @@ function TransactionDashboard() {
   return (
     <div className="container mx-auto py-6">
       <Tabs defaultValue="all" onValueChange={setActiveTab}>
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Financial Reports</h1>
           <TabsList>
             <TabsTrigger value="all">All Transactions</TabsTrigger>

@@ -45,136 +45,136 @@ import { toast } from "sonner";
 import Spinner from "@/components/Spinner";
 
 // Enhanced transaction data with additional fields
-const transactionData = [
-  {
-    _id: "681bba248b8e06c9bdc5e58a",
-    memberName: "Oli Ahmed",
-    memberEmail: "oli@gmail.com",
-    memberId: "681b49027b2fab13d3e841f8",
-    amount: 500,
-    type: "Deposit",
-    date: "2025-05-07",
-    approvedBy: "Md Asadur Rahaman Yead",
-    approvedByEmail: "yead191@gmail.com",
-    status: "Completed",
-    description: "Monthly contribution",
-    category: "Membership Fee",
-    reference: "REF-2025-05-001",
-    method: "Cash",
-  },
-  {
-    _id: "681bbaf28b8e06c9bdc5e58b",
-    memberName: "Oli Ahmed",
-    memberEmail: "oli@gmail.com",
-    memberId: "681b49027b2fab13d3e841f8",
-    amount: 1000,
-    type: "Deposit",
-    date: "2025-04-01",
-    approvedBy: "Md Asadur Rahaman Yead",
-    approvedByEmail: "yead191@gmail.com",
-    status: "Completed",
-    description: "Investment contribution",
-    category: "Investment",
-    reference: "REF-2025-04-002",
-    method: "Bank Transfer",
-  },
-  {
-    _id: "681bbaf28b8e06c9bdc5e58c",
-    memberName: "Sarah Johnson",
-    memberEmail: "sarah@example.com",
-    memberId: "681b49027b2fab13d3e841f9",
-    amount: 750,
-    type: "Deposit",
-    date: "2025-05-05",
-    approvedBy: "Md Asadur Rahaman Yead",
-    approvedByEmail: "yead191@gmail.com",
-    status: "Completed",
-    description: "Monthly contribution",
-    category: "Membership Fee",
-    reference: "REF-2025-05-003",
-    method: "Mobile Banking",
-  },
-  {
-    _id: "681bbaf28b8e06c9bdc5e58d",
-    memberName: "John Smith",
-    memberEmail: "john@example.com",
-    memberId: "681b49027b2fab13d3e841fa",
-    amount: 2000,
-    type: "Deposit",
-    date: "2025-05-02",
-    approvedBy: "Md Asadur Rahaman Yead",
-    approvedByEmail: "yead191@gmail.com",
-    status: "Completed",
-    description: "Investment contribution",
-    category: "Investment",
-    reference: "REF-2025-05-004",
-    method: "Bank Transfer",
-  },
-  {
-    _id: "681bbaf28b8e06c9bdc5e58e",
-    memberName: "Oli Ahmed",
-    memberEmail: "oli@gmail.com",
-    memberId: "681b49027b2fab13d3e841f8",
-    amount: 300,
-    type: "Withdrawal",
-    date: "2025-05-10",
-    approvedBy: "Md Asadur Rahaman Yead",
-    approvedByEmail: "yead191@gmail.com",
-    status: "Completed",
-    description: "Emergency withdrawal",
-    category: "Withdrawal",
-    reference: "REF-2025-05-005",
-    method: "Cash",
-  },
-  {
-    _id: "681bbaf28b8e06c9bdc5e58f",
-    memberName: "Sarah Johnson",
-    memberEmail: "sarah@example.com",
-    memberId: "681b49027b2fab13d3e841f9",
-    amount: 1500,
-    type: "Withdrawal",
-    date: "2025-04-28",
-    approvedBy: "Md Asadur Rahaman Yead",
-    approvedByEmail: "yead191@gmail.com",
-    status: "Completed",
-    description: "Loan disbursement",
-    category: "Loan",
-    reference: "REF-2025-04-006",
-    method: "Bank Transfer",
-  },
-  {
-    _id: "681bbaf28b8e06c9bdc5e590",
-    memberName: "John Smith",
-    memberEmail: "john@example.com",
-    memberId: "681b49027b2fab13d3e841fa",
-    amount: 250,
-    type: "Deposit",
-    date: "2025-04-15",
-    approvedBy: "Md Asadur Rahaman Yead",
-    approvedByEmail: "yead191@gmail.com",
-    status: "Completed",
-    description: "Late fee payment",
-    category: "Penalty",
-    reference: "REF-2025-04-007",
-    method: "Mobile Banking",
-  },
-  {
-    _id: "681bbaf28b8e06c9bdc5e591",
-    memberName: "Michael Brown",
-    memberEmail: "michael@example.com",
-    memberId: "681b49027b2fab13d3e841fb",
-    amount: 1200,
-    type: "Deposit",
-    date: "2025-05-01",
-    approvedBy: "Md Asadur Rahaman Yead",
-    approvedByEmail: "yead191@gmail.com",
-    status: "Pending",
-    description: "Initial membership deposit",
-    category: "Membership Fee",
-    reference: "REF-2025-05-008",
-    method: "Check",
-  },
-];
+// const transactionData = [
+//   {
+//     _id: "681bba248b8e06c9bdc5e58a",
+//     memberName: "Oli Ahmed",
+//     memberEmail: "oli@gmail.com",
+//     memberId: "681b49027b2fab13d3e841f8",
+//     amount: 500,
+//     type: "Deposit",
+//     date: "2025-05-07",
+//     approvedBy: "Md Asadur Rahaman Yead",
+//     approvedByEmail: "yead191@gmail.com",
+//     status: "Completed",
+//     description: "Monthly contribution",
+//     category: "Membership Fee",
+//     reference: "REF-2025-05-001",
+//     method: "Cash",
+//   },
+//   {
+//     _id: "681bbaf28b8e06c9bdc5e58b",
+//     memberName: "Oli Ahmed",
+//     memberEmail: "oli@gmail.com",
+//     memberId: "681b49027b2fab13d3e841f8",
+//     amount: 1000,
+//     type: "Deposit",
+//     date: "2025-04-01",
+//     approvedBy: "Md Asadur Rahaman Yead",
+//     approvedByEmail: "yead191@gmail.com",
+//     status: "Completed",
+//     description: "Investment contribution",
+//     category: "Investment",
+//     reference: "REF-2025-04-002",
+//     method: "Bank Transfer",
+//   },
+//   {
+//     _id: "681bbaf28b8e06c9bdc5e58c",
+//     memberName: "Sarah Johnson",
+//     memberEmail: "sarah@example.com",
+//     memberId: "681b49027b2fab13d3e841f9",
+//     amount: 750,
+//     type: "Deposit",
+//     date: "2025-05-05",
+//     approvedBy: "Md Asadur Rahaman Yead",
+//     approvedByEmail: "yead191@gmail.com",
+//     status: "Completed",
+//     description: "Monthly contribution",
+//     category: "Membership Fee",
+//     reference: "REF-2025-05-003",
+//     method: "Mobile Banking",
+//   },
+//   {
+//     _id: "681bbaf28b8e06c9bdc5e58d",
+//     memberName: "John Smith",
+//     memberEmail: "john@example.com",
+//     memberId: "681b49027b2fab13d3e841fa",
+//     amount: 2000,
+//     type: "Deposit",
+//     date: "2025-05-02",
+//     approvedBy: "Md Asadur Rahaman Yead",
+//     approvedByEmail: "yead191@gmail.com",
+//     status: "Completed",
+//     description: "Investment contribution",
+//     category: "Investment",
+//     reference: "REF-2025-05-004",
+//     method: "Bank Transfer",
+//   },
+//   {
+//     _id: "681bbaf28b8e06c9bdc5e58e",
+//     memberName: "Oli Ahmed",
+//     memberEmail: "oli@gmail.com",
+//     memberId: "681b49027b2fab13d3e841f8",
+//     amount: 300,
+//     type: "Withdrawal",
+//     date: "2025-05-10",
+//     approvedBy: "Md Asadur Rahaman Yead",
+//     approvedByEmail: "yead191@gmail.com",
+//     status: "Completed",
+//     description: "Emergency withdrawal",
+//     category: "Withdrawal",
+//     reference: "REF-2025-05-005",
+//     method: "Cash",
+//   },
+//   {
+//     _id: "681bbaf28b8e06c9bdc5e58f",
+//     memberName: "Sarah Johnson",
+//     memberEmail: "sarah@example.com",
+//     memberId: "681b49027b2fab13d3e841f9",
+//     amount: 1500,
+//     type: "Withdrawal",
+//     date: "2025-04-28",
+//     approvedBy: "Md Asadur Rahaman Yead",
+//     approvedByEmail: "yead191@gmail.com",
+//     status: "Completed",
+//     description: "Loan disbursement",
+//     category: "Loan",
+//     reference: "REF-2025-04-006",
+//     method: "Bank Transfer",
+//   },
+//   {
+//     _id: "681bbaf28b8e06c9bdc5e590",
+//     memberName: "John Smith",
+//     memberEmail: "john@example.com",
+//     memberId: "681b49027b2fab13d3e841fa",
+//     amount: 250,
+//     type: "Deposit",
+//     date: "2025-04-15",
+//     approvedBy: "Md Asadur Rahaman Yead",
+//     approvedByEmail: "yead191@gmail.com",
+//     status: "Completed",
+//     description: "Late fee payment",
+//     category: "Penalty",
+//     reference: "REF-2025-04-007",
+//     method: "Mobile Banking",
+//   },
+//   {
+//     _id: "681bbaf28b8e06c9bdc5e591",
+//     memberName: "Michael Brown",
+//     memberEmail: "michael@example.com",
+//     memberId: "681b49027b2fab13d3e841fb",
+//     amount: 1200,
+//     type: "Deposit",
+//     date: "2025-05-01",
+//     approvedBy: "Md Asadur Rahaman Yead",
+//     approvedByEmail: "yead191@gmail.com",
+//     status: "Pending",
+//     description: "Initial membership deposit",
+//     category: "Membership Fee",
+//     reference: "REF-2025-05-008",
+//     method: "Check",
+//   },
+// ];
 
 function TransactionReport() {
   // const [transactions, setTransactions] = useState([]);
@@ -201,10 +201,17 @@ function TransactionReport() {
     isLoading: transactionLoading,
     refetch,
   } = useQuery({
-    queryKey: ["transactions", searchTerm, typeFilter],
+    queryKey: [
+      "transactions",
+      searchTerm,
+      typeFilter,
+      statusFilter,
+      startDate,
+      endDate,
+    ],
     queryFn: async () => {
       const { data } = await axiosSecure.get(
-        `/transactions?search=${searchTerm}&type=${typeFilter}`
+        `/transactions?search=${searchTerm}&type=${typeFilter}&method=${statusFilter}&startDate=${startDate}&endDate=${endDate}`
       );
       return data;
     },
@@ -390,7 +397,7 @@ function TransactionReport() {
     <div className="container mx-auto py-6 space-y-6 print:py-0">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
         <h1 className="text-2xl font-bold">Transaction Report</h1>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 print:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
@@ -398,7 +405,7 @@ function TransactionReport() {
                 Export
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className={"print:hidden"}>
               <DropdownMenuItem onClick={() => handleExport("csv")}>
                 <FileText className="h-4 w-4 mr-2" />
                 Export as CSV
@@ -470,7 +477,7 @@ function TransactionReport() {
       {/* Filters */}
       <Card className="print:hidden">
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="text-sm font-medium mb-1 block">Search</label>
               <div className="relative">
@@ -499,38 +506,24 @@ function TransactionReport() {
               </Select>
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">Status</label>
+              <label className="text-sm font-medium mb-1 block">
+                Payment Method
+              </label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Statuses" />
+                  <SelectValue placeholder="All Method" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Failed">Failed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-1 block">Category</label>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="Membership Fee">Membership Fee</SelectItem>
-                  <SelectItem value="Investment">Investment</SelectItem>
-                  <SelectItem value="Loan">Loan</SelectItem>
-                  <SelectItem value="Withdrawal">Withdrawal</SelectItem>
-                  <SelectItem value="Penalty">Penalty</SelectItem>
+                  <SelectItem value="all">All Payment</SelectItem>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                  <SelectItem value="Mobile Banking">Mobile Banking</SelectItem>
+                  <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             <div>
               <label className="text-sm font-medium mb-1 block">
                 Start Date
@@ -556,19 +549,6 @@ function TransactionReport() {
                   onChange={(e) => setEndDate(e.target.value)}
                 />
               </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-1 block">Sort By</label>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sort By" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date">Date</SelectItem>
-                  <SelectItem value="amount">Amount</SelectItem>
-                  <SelectItem value="memberName">Member Name</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
             <div>
               <label className="text-sm font-medium mb-1 block">
