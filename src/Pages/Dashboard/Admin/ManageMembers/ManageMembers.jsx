@@ -53,7 +53,7 @@ const ManageMembers = () => {
   // if (error) return "Error While Fetching Data";
 
   return (
-    <div className="">
+    <div className="container mx-auto p-2">
       <DashboardPagesHeader
         title={"Manage Members"}
         subtitle={

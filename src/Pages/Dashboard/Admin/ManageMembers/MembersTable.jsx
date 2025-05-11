@@ -28,13 +28,14 @@ import {
 } from "@/components/ui/tooltip";
 // import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { format } from "date-fns";
-import { Loader, MoreVertical, Trash, User } from "lucide-react";
+import { Loader, MoreVertical, ShieldCheck, Trash, User } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 // Sample data based on the Excel sheet
 
@@ -77,6 +78,7 @@ const MembersTable = ({ members, isLoading, refetch }) => {
           <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Phone Number</TableHead>
+          <TableHead>Role</TableHead>
           <TableHead>Join Date</TableHead>
           <TableHead>Total Contributions</TableHead>
           <TableHead>Actions</TableHead>
@@ -118,6 +120,25 @@ const MembersTable = ({ members, isLoading, refetch }) => {
                 </TableCell>
                 <TableCell>{member?.email}</TableCell>
                 <TableCell>{member?.phoneNumber}</TableCell>
+                <TableCell>
+                  {member?.role === "admin" ? (
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      <ShieldCheck className="h-4 w-4 text-blue-600" />
+                      Admin
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      <User className="h-4 w-4 text-green-600" />
+                      Member
+                    </Badge>
+                  )}
+                </TableCell>
                 <TableCell>
                   {member?.createdAt
                     ? format(new Date(member.createdAt), "dd MMM yyyy")
