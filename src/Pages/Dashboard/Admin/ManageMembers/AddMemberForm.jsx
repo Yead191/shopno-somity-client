@@ -27,11 +27,12 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
   const [role, setRole] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [email, setEmail] = useState("");
   const [preview, setPreview] = useState("");
   const [isError, setIsError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("+880");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [strongPassword, setStrongPassword] = useState("");
   const [confirmedPassword, setConfirmedPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -67,20 +68,17 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
 
   // Bangladeshi phone number validation
   const validateBangladeshiNumber = (number) => {
-    const cleanNumber = number.replace(/[^\d+]/g, "");
-    const bdNumberRegex = /^\+8801[3-9][0-9]{8}$/;
+    const cleanNumber = number.replace(/[^\d]/g, "");
+    const bdNumberRegex = /^01[3-9][0-9]{8}$/;
     return bdNumberRegex.test(cleanNumber);
   };
 
   const handlePhoneChange = (e) => {
     let value = e.target.value;
-    if (!value.startsWith("+880")) {
-      value = "+880" + value.replace(/^\+880/, "");
-    }
     setPhoneNumber(value);
     if (value && !validateBangladeshiNumber(value)) {
       setIsError(
-        "Please Enter A Valid Bangladeshi Phone Number \n (e.g., +880 1XNN-NNNNNN)"
+        "Please Enter A Valid Bangladeshi Phone Number \n (e.g., 01XNN-NNNNNN)"
       );
     } else {
       setIsError("");
@@ -143,20 +141,20 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
     setLoading(true);
 
     // Image validation
-    if (!image) {
-      setLoading(false);
-      setIsError("Please Select An Image For Your Profile!");
-      return;
-    }
 
     // Upload Image To imgBB
-    let imageUrl;
     try {
-      imageUrl = await imgUpload(image);
-      if (!imageUrl) {
-        setLoading(false);
-        setIsError("Image Upload Failed! Try Again");
-        return;
+      if (image) {
+        // Upload Image To imgBB
+        const data = await imgUpload(image);
+        setImageUrl(data);
+        // console.log(imageUrl);
+        // Show error if image upload failed
+        if (!data) {
+          setLoading(false);
+          setIsError("Image Upload Failed! Try Again");
+          return;
+        }
       }
     } catch (error) {
       setLoading(false);
@@ -231,8 +229,11 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
       email,
       name,
       password: strongPassword,
-      photo: imageUrl,
+      photo: imageUrl
+        ? imageUrl
+        : "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
       phoneNumber,
+      isActive: true,
     };
 
     try {
@@ -279,6 +280,8 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
       setLoading(false);
     }
   };
+
+  console.log(modalData);
   return (
     <>
       <Card className="border shadow-none border-[#e5e7eb] w-full py-6 rounded-lg">
@@ -329,11 +332,12 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
                 <Label>Phone Number</Label>
                 <Input
                   type="tel"
+                  inputMode="numeric"
                   required
                   value={phoneNumber}
                   onChange={handlePhoneChange}
-                  pattern="\+8801[3-9][0-9]{8}"
-                  maxLength={14}
+                  pattern="\01[3-9][0-9]{8}"
+                  maxLength={11}
                   placeholder={"Enter Phone Number"}
                 />
               </div>
@@ -449,7 +453,6 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
           </form>
         </CardContent>
       </Card>
-
       {/* Confirmation Modal */}
       <Dialog
         open={isModalOpen}
@@ -491,8 +494,6 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
             {/* Role Title */}
             <div className="text-center">
               <span className="inline-flex items-center rounded-full bg-primary px-4 py-1 text-sm font-medium text-primary-foreground">
-                {modalData.role.charAt(0).toUpperCase() +
-                  modalData.role.slice(1)}{" "}
                 Account Credentials
               </span>
             </div>

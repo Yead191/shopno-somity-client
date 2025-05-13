@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import DashboardPagesHeader from "@/components/DashboardPagesHeader";
 import MembersTable from "./MembersTable";
+import useMember from "@/hooks/useMember";
 
 const ManageMembers = () => {
   const [page, setPage] = useState(1);
@@ -22,26 +23,30 @@ const ManageMembers = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [sort, setSort] = useState("joinDate-desc");
-
   const sortOptions = {
     "joinDate-desc": "Join Date (Newest)",
     "joinDate-asc": "Join Date (Oldest)",
     "totalContributions-desc": "Total Contributions (High to Low)",
     "totalContributions-asc": "Total Contributions (Low to High)",
   };
-
+  const [data, isLoading, refetch, error] = useMember(
+    page,
+    sort,
+    search,
+    selectedFilter
+  );
   // Get all members data
-  const { data, isLoading, refetch, error } = useQuery({
-    queryKey: ["members", page, sort, search, selectedFilter],
-    queryFn: async () => {
-      const { data } = await axios(
-        `${
-          import.meta.env.VITE_API_URL
-        }/users?page=${page}&sort=${sort}&search=${search}&filter=${selectedFilter}`
-      );
-      return data;
-    },
-  });
+  // const { data, isLoading, refetch, error } = useQuery({
+  //   queryKey: ["members", page, sort, search, selectedFilter],
+  //   queryFn: async () => {
+  //     const { data } = await axios(
+  //       `${
+  //         import.meta.env.VITE_API_URL
+  //       }/users?page=${page}&sort=${sort}&search=${search}&filter=${selectedFilter}`
+  //     );
+  //     return data;
+  //   },
+  // });
 
   // Pagination Functions
   const handlePageChange = (pageNumber) => setPage(pageNumber);

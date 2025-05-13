@@ -20,41 +20,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MemberList } from "./MemberList";
 import { RecentTransactions } from "./RecentTransactions";
 import { StatCard } from "./StatCard";
-import { StatisticsHeader } from "./StatisticsHeader";
+
 import AssignUserForm from "../ManageMembers/AddMemberForm";
-import useAxiosSecure from "@/hooks/useAxiosSecure";
+import spinnerLogo from "@/assets/shopno-logo.png";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/Spinner";
+import useAxiosSecure from "@/hooks/useAxiosSecure";
+import { Link } from "react-router-dom";
 
 // Mock data
 // const overviewStats = {
 //   totalInvestment: 9876542,
 //   totalMembers: 57,
 // };
-
-const transactionSummary = [
-  { id: 1, label: "Deposits", count: 32, color: "bg-green-100 text-green-800" },
-  {
-    id: 2,
-    label: "Withdrawals",
-    count: 15,
-    color: "bg-orange-100 text-orange-800",
-  },
-  { id: 3, label: "Loans", count: 8, color: "bg-red-100 text-red-800" },
-  { id: 4, label: "Profits", count: 12, color: "bg-blue-100 text-blue-800" },
-  {
-    id: 5,
-    label: "Penalties",
-    count: 3,
-    color: "bg-purple-100 text-purple-800",
-  },
-  {
-    id: 6,
-    label: "Total Transactions",
-    count: 70,
-    color: "bg-gray-100 text-gray-800",
-  },
-];
 
 const memberStats = {
   totalMembers: 57,
@@ -81,6 +59,17 @@ function Statistics() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const axiosSecure = useAxiosSecure();
+  // const [data, isLoading, , error] = useMember(active);
+  const { data: members = [], isLoading: memberLoading } = useQuery({
+    queryKey: ["activeMember", searchTerm],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get(
+        `/users?active=active&search=${searchTerm}`
+      );
+      return data;
+    },
+  });
+  // console.log(members);
   const {
     data: overviewStats = {},
     isLoading: statsLoading,
@@ -101,7 +90,42 @@ function Statistics() {
     },
   });
 
-  if (statsLoading || reportLoading) {
+  const transactionSummary = [
+    {
+      id: 1,
+      label: "Deposits",
+      count: overviewStats?.totalDepositCount,
+      color: "bg-green-100 text-green-800",
+    },
+    {
+      id: 2,
+      label: "Withdrawals",
+      count: overviewStats?.totalWithdrawalCount,
+      color: "bg-orange-100 text-orange-800",
+    },
+    {
+      id: 5,
+      label: "Penalties",
+      count: overviewStats?.totalPenalties,
+      color: "bg-purple-100 text-purple-800",
+    },
+    {
+      id: 6,
+      label: "Total Transactions",
+      count: overviewStats?.totalTransactions,
+      color: "bg-gray-100 text-gray-800",
+    },
+  ];
+
+  const { data: transactions = [], isLoading: transactionLoading } = useQuery({
+    queryKey: ["transactions"],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get(`/transactions`);
+      return data;
+    },
+  });
+
+  if (statsLoading || reportLoading || transactionLoading) {
     return <Spinner />;
   }
 
@@ -109,17 +133,7 @@ function Statistics() {
     <div className="container mx-auto py-6 space-y-8">
       {/* <StatisticsHeader /> */}
       {/* Header with search and add button */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search members..."
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+      <div className="flex flex-col sm:flex-row justify-end items-center gap-4">
         <Button
           onClick={() => setIsFormOpen(!isFormOpen)}
           variant={`${isFormOpen ? "outline" : ""}`}
@@ -197,6 +211,7 @@ function Statistics() {
                       <AvatarImage
                         src={admin.adminImage}
                         alt={admin.adminName}
+                        className={"object-cover"}
                       />
                       <AvatarFallback>
                         {admin.adminName
@@ -236,12 +251,34 @@ function Statistics() {
       {/* Active Members Section */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium flex items-center">
-            <Users className="mr-2 h-5 w-5" /> Active Members
+          <CardTitle className="text-lg font-medium flex flex-col md:flex-row gap-2 md:items-center justify-between">
+            <div className="flex items-center">
+              <Users className="mr-2 h-5 w-5" /> Active Members
+            </div>
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search members..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <MemberList />
+          {memberLoading ? (
+            <div className="flex flex-col items-center justify-center  gap-4">
+              {/* Logo */}
+              <img src={spinnerLogo} alt="Shopno Logo" className="w-32 h-32" />
+
+              {/* Spinner below the image */}
+              <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-gray-400 border-t-transparent"></div>
+            </div>
+          ) : (
+            <MemberList members={members} />
+          )}
         </CardContent>
       </Card>
 
@@ -253,10 +290,13 @@ function Statistics() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {transactionSummary.map((item) => (
-              <div key={item.id} className={`rounded-lg p-4 ${item.color}`}>
-                <p className="text-2xl font-bold">{item.count}</p>
+              <div
+                key={item.id}
+                className={`rounded-lg p-4 w-full ${item.color}`}
+              >
+                <p className="text-2xl font-bold">{item?.count}</p>
                 <p className="text-sm">{item.label}</p>
               </div>
             ))}
@@ -267,12 +307,20 @@ function Statistics() {
       {/* Recent Transactions */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium flex items-center">
-            <CreditCard className="mr-2 h-5 w-5" /> Recent Transactions
+          <CardTitle className="text-lg font-medium flex items-center justify-between">
+            <div>
+              <CreditCard className="mr-2 h-5 w-5 inline-flex" /> Recent
+              Transactions
+            </div>
+            <Link to={"/dashboard/admin/transaction-report"}>
+              <Button size={"sm"} variant={"outline"}>
+                View All Transactions
+              </Button>
+            </Link>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <RecentTransactions />
+          <RecentTransactions transactions={transactions} />
         </CardContent>
       </Card>
 
@@ -422,17 +470,17 @@ function Statistics() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <StatCard
                   title="Total Transactions"
-                  value={transactionSummary[5].count}
+                  value={transactionSummary[5]?.count}
                   icon={<CreditCard className="h-4 w-4" />}
                 />
                 <StatCard
                   title="Total Deposits"
-                  value={transactionSummary[0].count}
+                  value={transactionSummary[0]?.count}
                   icon={<DollarSign className="h-4 w-4" />}
                 />
                 <StatCard
                   title="Total Withdrawals"
-                  value={transactionSummary[1].count}
+                  value={transactionSummary[1]?.count}
                   icon={<DollarSign className="h-4 w-4" />}
                 />
               </div>

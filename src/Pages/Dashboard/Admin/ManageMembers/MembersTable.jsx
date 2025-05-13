@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/tooltip";
 // import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { format } from "date-fns";
-import { Loader, MoreVertical, ShieldCheck, Trash, User } from "lucide-react";
+import { Loader, MoreVertical, Settings, ShieldCheck, Trash, User } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -36,6 +36,7 @@ import axios from "axios";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import SettingsModal from "./SettingsModal";
 
 // Sample data based on the Excel sheet
 
@@ -44,7 +45,8 @@ const MembersTable = ({ members, isLoading, refetch }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
   const handleMemberDelete = async () => {
     setIsDeleting(true);
     try {
@@ -166,6 +168,15 @@ const MembersTable = ({ members, isLoading, refetch }) => {
                       </Link>
                       <DropdownMenuItem
                         onClick={() => {
+                          setEditModalOpen(true);
+                          setSelectedMember(member);
+                        }}
+                      >
+                        <Settings className="w-4 h-4 text-blue-500" />
+                        Settings
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
                           setSelectedMemberId(member?.email);
                           setIsOpen(true);
                         }}
@@ -238,6 +249,16 @@ const MembersTable = ({ members, isLoading, refetch }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Settings Modal */}
+      {selectedMember && (
+        <SettingsModal
+          open={editModalOpen}
+          setOpen={setEditModalOpen}
+          member={selectedMember}
+          refetch={refetch} 
+        />
+      )}
     </Table>
   );
 };

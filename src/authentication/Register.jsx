@@ -27,8 +27,9 @@ const Register = () => {
   const [email, setEmail] = useState("");
   // states for photo, phoneNumber
   const [image, setImage] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [preview, setPreview] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState(880);
+  const [phoneNumber, setPhoneNumber] = useState("");
   // states for password
   const [isEyeOpen, setIsEyeOpen] = useState(false);
   const [signal, setSignal] = useState({
@@ -47,8 +48,8 @@ const Register = () => {
 
   // Bangladeshi phone number validation
   const validateBangladeshiNumber = (number) => {
-    const cleanNumber = number.replace(/[^\d+]/g, "");
-    const bdNumberRegex = /^\8801[3-9][0-9]{8}$/;
+    const cleanNumber = number.replace(/[^\d]/g, "");
+    const bdNumberRegex = /^01[3-9][0-9]{8}$/;
     return bdNumberRegex.test(cleanNumber);
   };
 
@@ -57,7 +58,7 @@ const Register = () => {
     setPhoneNumber(value);
     if (value && !validateBangladeshiNumber(value)) {
       setIsError(
-        "Please Enter A Valid Bangladeshi Phone Number \n (e.g., +880 1XNN-NNNNNN)"
+        "Please Enter A Valid Bangladeshi Phone Number \n (e.g., 01XNN-NNNNNN)"
       );
     } else {
       setIsError("");
@@ -132,20 +133,18 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     // Show error is image not selected
-    if (!image) {
-      setLoading(false);
-      setIsError("Please Select An Image For Your Profile!");
-      return;
-    }
 
-    // Upload Image To imgBB
-    const imageUrl = await imgUpload(image);
-    // console.log(imageUrl);
-    // Show error if image upload failed
-    if (!imageUrl) {
-      setLoading(false);
-      setIsError("Image Upload Failed! Try Again");
-      return;
+    if (image) {
+      // Upload Image To imgBB
+      const data = await imgUpload(image);
+      setImageUrl(data);
+      // console.log(imageUrl);
+      // Show error if image upload failed
+      if (!data) {
+        setLoading(false);
+        setIsError("Image Upload Failed! Try Again");
+        return;
+      }
     }
 
     // Password Validation
@@ -166,7 +165,7 @@ const Register = () => {
     if (!validateBangladeshiNumber(phoneNumber)) {
       setLoading(false);
       setIsError(
-        "Please Enter A Valid Bangladeshi Phone Number \n (e.g., +880 1XNN-NNNNNN)"
+        "Please Enter A Valid Bangladeshi Phone Number \n (e.g., 01XNN-NNNNNN)"
       );
       return;
     }
@@ -175,7 +174,9 @@ const Register = () => {
     const user = {
       email,
       name,
-      image: imageUrl,
+      image: imageUrl
+        ? imageUrl
+        : "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
       password: strongPassword,
       phoneNumber,
     };
@@ -197,6 +198,7 @@ const Register = () => {
               password: user?.password,
               photo: currentUser?.photoURL,
               phoneNumber: user?.phoneNumber,
+              isActive: true,
               uid: currentUser?.uid,
               createdAt: new Date(
                 currentUser?.metadata?.creationTime
@@ -334,8 +336,8 @@ const Register = () => {
                 required
                 value={phoneNumber}
                 onChange={handlePhoneChange}
-                pattern="\8801[3-9][0-9]{8}"
-                maxLength={13}
+                pattern="\01[3-9][0-9]{8}"
+                maxLength={11}
                 placeholder="Phone Number"
                 className="peer border-blue-200 border rounded-md outline-none pl-11 pr-5 py-3 w-full focus:ring ring-blue-200 transition-colors duration-300"
               />
