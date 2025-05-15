@@ -44,6 +44,15 @@ import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import Spinner from "@/components/Spinner";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 // Enhanced transaction data with additional fields
 // const transactionData = [
@@ -191,6 +200,8 @@ function TransactionReport() {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isConfirming, setIsConfirming] = useState(false);
   const axiosSecure = useAxiosSecure();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   // useEffect(() => {
   //   // In a real app, this would be an API call
@@ -209,15 +220,17 @@ function TransactionReport() {
       statusFilter,
       startDate,
       endDate,
+      page,
+      limit,
     ],
     queryFn: async () => {
       const { data } = await axiosSecure.get(
-        `/transactions?search=${searchTerm}&type=${typeFilter}&method=${statusFilter}&startDate=${startDate}&endDate=${endDate}`
+        `/transactions?search=${searchTerm}&type=${typeFilter}&method=${statusFilter}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=${limit}`
       );
       return data;
     },
   });
-
+  // console.log(transactions);
   // useEffect(() => {
   //   let result = [...transactions];
 
@@ -294,15 +307,15 @@ function TransactionReport() {
   //   endDate,
   // ]);
 
-  const totalDeposits = transactions
-    .filter((t) => t.type === "Deposit")
+  const totalDeposits = transactions?.transactions
+    ?.filter((t) => t.type === "Deposit")
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const totalWithdrawals = transactions
-    .filter((t) => t.type === "Withdraw")
+  const totalWithdrawals = transactions?.transactions
+    ?.filter((t) => t.type === "Withdraw")
     .reduce((sum, t) => sum + t.amount, 0);
-  const totalPenalties = transactions
-    .filter((t) => t.type === "Penalty")
+  const totalPenalties = transactions.transactions
+    ?.filter((t) => t.type === "Penalty")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const balance = totalDeposits - totalWithdrawals;
@@ -316,6 +329,7 @@ function TransactionReport() {
     setEndDate("");
     setSortBy("date");
     setSortOrder("desc");
+    setPage(1);
   };
 
   const handleExport = (format) => {
@@ -397,6 +411,23 @@ function TransactionReport() {
       }
     );
   };
+
+  // Pagination Functions
+  const handlePageChange = (pageNumber) => {
+    setPage(pageNumber);
+  };
+  const handlePrevPage = () => setPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () => {
+    setPage((prev) => (prev < transactions.totalPages ? prev + 1 : prev));
+  };
+
+  // Handle limit change
+  const handleLimitChange = (newLimit) => {
+    const parsedLimit = parseInt(newLimit, 10);
+    setLimit(parsedLimit);
+    setPage(1);
+  };
+
   return (
     <div className="container mx-auto py-6 space-y-6 print:py-0">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
@@ -435,7 +466,7 @@ function TransactionReport() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Deposits</p>
                 <h3 className="text-2xl font-bold text-green-600">
-                  ৳{totalDeposits.toLocaleString()}
+                  ৳{totalDeposits?.toLocaleString()}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-green-100">
@@ -452,7 +483,7 @@ function TransactionReport() {
                   Total Withdrawals
                 </p>
                 <h3 className="text-2xl font-bold text-red-600">
-                  ৳{totalWithdrawals.toLocaleString()}
+                  ৳{totalWithdrawals?.toLocaleString()}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-red-100">
@@ -482,7 +513,7 @@ function TransactionReport() {
               <div>
                 <p className="text-sm text-muted-foreground">Current Balance</p>
                 <h3 className="text-2xl font-bold">
-                  ৳{balance.toLocaleString()}
+                  ৳{balance?.toLocaleString()}
                 </h3>
               </div>
               <div className="p-3 rounded-full bg-blue-100">
@@ -620,14 +651,14 @@ function TransactionReport() {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions.length === 0 ? (
+                  {transactions.transactions.length === 0 ? (
                     <tr>
                       <td colSpan="8" className="text-center p-4">
                         No transactions found
                       </td>
                     </tr>
                   ) : (
-                    transactions?.map((transaction) => (
+                    transactions?.transactions?.map((transaction) => (
                       <tr
                         key={transaction._id}
                         className="border-b hover:bg-muted/50"
@@ -659,7 +690,9 @@ function TransactionReport() {
                               transaction?.paymentMethod
                             )}
                           >
-                            {transaction?.paymentMethod}
+                            {transaction?.paymentMethod
+                              ? transaction?.paymentMethod
+                              : transaction?.penaltyReason}
                           </Badge>
                         </td>
                         {/* <td className="p-4 print:hidden">
@@ -699,7 +732,9 @@ function TransactionReport() {
                                         selectedTransaction.paymentMethod
                                       )}
                                     >
-                                      {selectedTransaction.paymentMethod}
+                                      {transaction?.paymentMethod
+                                        ? transaction?.paymentMethod
+                                        : transaction?.penaltyReason}
                                     </Badge>
                                   </div>
                                   <div className="text-center my-2">
@@ -785,6 +820,122 @@ function TransactionReport() {
                 </tbody>
               </table>
             </div>
+            {/* Pagination */}
+
+            <Pagination className="mt-4 flex flex-wrap">
+              <PaginationContent>
+                {/* Previous */}
+                <PaginationItem>
+                  <PaginationPrevious
+                    className="cursor-pointer"
+                    onClick={handlePrevPage}
+                  />
+                </PaginationItem>
+
+                {/* Page Numbers */}
+                {transactionLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <PaginationItem key={i}>
+                      <div className="w-8 h-8 skeleton rounded-md"></div>
+                    </PaginationItem>
+                  ))
+                ) : (
+                  <>
+                    {/* Always show page 1 */}
+                    <PaginationItem>
+                      <PaginationLink
+                        className="cursor-pointer"
+                        isActive={page === 1}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(1);
+                        }}
+                      >
+                        1
+                      </PaginationLink>
+                    </PaginationItem>
+
+                    {/* Show left ellipsis if needed */}
+                    {page > 3 && (
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    )}
+
+                    {/* Show pages around current */}
+                    {Array.from(
+                      { length: transactions.totalPages },
+                      (_, i) => i + 1
+                    )
+                      .filter(
+                        (p) =>
+                          p !== 1 &&
+                          p !== transactions.totalPages &&
+                          Math.abs(p - page) <= 1
+                      )
+                      .map((pageNumber) => (
+                        <PaginationItem key={pageNumber}>
+                          <PaginationLink
+                            className="cursor-pointer"
+                            isActive={pageNumber === page}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(pageNumber);
+                            }}
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+
+                    {/* Show right ellipsis if needed */}
+                    {page < transactions.totalPages - 2 && (
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    )}
+
+                    {/* Always show last page */}
+                    {transactions.totalPages > 1 && (
+                      <PaginationItem>
+                        <PaginationLink
+                          className="cursor-pointer"
+                          isActive={page === transactions.totalPages}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlePageChange(transactions.totalPages);
+                          }}
+                        >
+                          {transactions.totalPages}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )}
+                  </>
+                )}
+
+                {/* Next */}
+                <PaginationItem>
+                  <PaginationNext
+                    className="cursor-pointer"
+                    onClick={handleNextPage}
+                  />
+                </PaginationItem>
+                <Select
+                  id="limit"
+                  value={limit.toString()}
+                  onValueChange={handleLimitChange}
+                >
+                  <SelectTrigger className="w-24">
+                    <SelectValue placeholder="Select limit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+              </PaginationContent>
+            </Pagination>
           </CardContent>
         )}
       </Card>

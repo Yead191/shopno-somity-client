@@ -120,7 +120,7 @@ function Statistics() {
   const { data: transactions = [], isLoading: transactionLoading } = useQuery({
     queryKey: ["transactions"],
     queryFn: async () => {
-      const { data } = await axiosSecure.get(`/transactions`);
+      const { data } = await axiosSecure.get(`/transactions?limit=10`);
       return data;
     },
   });
@@ -210,9 +210,9 @@ function Statistics() {
               {adminReport?.map((admin, index) => (
                 <div
                   key={index}
-                  className="flex justify-between items-center p-4 border rounded-lg shadow-sm mb-4"
+                  className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center p-4 border rounded-lg shadow-sm mb-4"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 ">
                     <Avatar className="h-12 w-12">
                       <AvatarImage
                         src={admin.adminImage}
@@ -234,7 +234,7 @@ function Statistics() {
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="md:text-right">
                     <p className="text-sm">
                       <span className="font-semibold">Deposits:</span> ৳
                       {admin.totalDeposits.toLocaleString()}

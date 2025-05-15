@@ -102,7 +102,7 @@ export function RecentTransactions({ transactions }) {
 
   return (
     <div className="space-y-4">
-      {transactions?.slice(0, 10).map((transaction) => (
+      {transactions?.transactions?.map((transaction) => (
         <div
           key={transaction._id}
           className="flex items-center justify-between py-2"
