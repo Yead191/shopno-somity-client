@@ -26,8 +26,21 @@ function TransactionHistory({ transactions }) {
           {transactions?.map((transaction) => (
             <TableRow key={transaction._id}>
               <TableCell className="font-medium">{transaction.date}</TableCell>
-              <TableCell>{transaction?.type}</TableCell>
-              <TableCell>{transaction?.paymentMethod}</TableCell>
+
+              <TableCell
+                className={
+                  transaction?.type === "Deposit"
+                    ? "text-green-500"
+                    : "text-red-500"
+                }
+              >
+                {transaction?.type}
+              </TableCell>
+              <TableCell>
+                {transaction?.paymentMethod
+                  ? transaction.paymentMethod
+                  : transaction?.penaltyReason}
+              </TableCell>
               <TableCell>
                 <div className="flex items-center">
                   {transaction?.type === "Deposit" ? (

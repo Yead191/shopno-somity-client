@@ -108,7 +108,7 @@ export function RecentTransactions({ transactions }) {
           className="flex items-center justify-between py-2"
         >
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
+            {/* <Avatar className="h-10 w-10">
               <AvatarImage
                 src={transaction?.photo || "/placeholder.svg"}
                 alt={transaction.memberName}
@@ -120,11 +120,11 @@ export function RecentTransactions({ transactions }) {
                   .join("")
                   .toUpperCase()}
               </AvatarFallback>
-            </Avatar>
+            </Avatar> */}
             <div>
-              <div className="flex items-center">
+              <div className="flex flex-col md:flex-row md:items-center">
                 <p className="font-medium">{transaction.memberName}</p>
-                <span className="mx-2">•</span>
+                <span className="mx-2 hidden md:flex">•</span>
                 <span className="text-sm text-muted-foreground">
                   {transaction.date}
                 </span>
@@ -146,7 +146,7 @@ export function RecentTransactions({ transactions }) {
               ৳{transaction.amount.toLocaleString()}
             </p>
             <Badge variant="outline" className="mt-1">
-              Approved
+              {transaction?.approvedBy}
             </Badge>
           </div>
         </div>

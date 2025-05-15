@@ -6,15 +6,35 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Edit, MapPin } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  BanIcon,
+  CalendarIcon,
+  CopyIcon,
+  Edit,
+  MailIcon,
+  PhoneIcon,
+  UserIcon,
+  WalletIcon,
+} from "lucide-react";
 import TransactionHistory from "./TransactionHistory";
 import DepositModal from "./DepositModal";
 import WithdrawModal from "./WithdrawModal";
-import { calculateTotalContribution } from "@/utils/helpers";
+
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, formatDate } from "date-fns";
 import Spinner from "@/components/Spinner";
+import PenaltyModal from "./PenaltyModal";
+import { calculateTransactionSummary } from "@/utils/helpers";
+import { toast } from "sonner";
 
 function MemberProfilePage() {
   const { id } = useParams();
@@ -151,151 +171,267 @@ function MemberProfilePage() {
     return <div className="container mx-auto py-6">Member not found</div>;
   }
 
-  const totalContribution = calculateTotalContribution(transactions);
+  const totalContribution = calculateTransactionSummary(transactions);
+  // console.log(totalContribution);
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        toast.success("Copied to clipboard", { duration: 2000 });
+      })
+      .catch((err) => {
+        toast.error("Failed to copy", { duration: 2000 });
+        console.error("Clipboard error:", err);
+      });
+  };
 
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Column - Member Information */}
         <div className="md:col-span-1 space-y-6">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center space-y-4 mb-6">
-                <Avatar className="h-24 w-24 border-4 border-primary/10 object-cover">
+          <Card className="overflow-hidden border shadow-md py-0">
+            {/* Header with avatar and name */}
+            <CardHeader className="py-2  bg-gradient-to-r from-slate-50 to-slate-100">
+              <div className="flex gap-2 items-center">
+                <Avatar className="h-24 w-24 border-4 border-primary/10 ">
                   <img
-                    src={result?.photo || "/placeholder.jpg"}
+                    src={result?.photo || "/placeholder.svg?height=96&width=96"}
                     alt={result.name}
+                    className="object-cover object-center"
                   />
                 </Avatar>
-                <div className="text-center">
+                <div className="mt-4 text-left">
                   <h2 className="text-xl font-bold">{result.name}</h2>
-                  <p className="text-muted-foreground">{result.role}</p>
-                  <p className="text-sm font-medium mt-1">
-                    Current Balance:{" "}
-                    <span className="font-bold">
-                      ৳ {totalContribution?.toLocaleString()}
-                    </span>
-                  </p>
+                  <Badge variant="outline" className="mt-1 font-normal">
+                    {result?.role.toUpperCase()}
+                  </Badge>
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="pt-2">
+              {/* Financial Information */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="flex items-center p-3 rounded-lg bg-green-50 border border-green-100">
+                  <ArrowDownIcon className="h-5 w-5 mr-2 text-green-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      Total Deposits
+                    </p>
+                    <p className="font-bold text-green-700">
+                      ৳ {totalContribution?.deposits?.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center p-3 rounded-lg bg-red-50 border border-red-100">
+                  <ArrowUpIcon className="h-5 w-5 mr-2 text-red-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      Total Withdrawals
+                    </p>
+                    <p className="font-bold text-red-700">
+                      ৳ {totalContribution?.withdrawals?.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center p-3 rounded-lg bg-amber-50 border border-amber-100">
+                  <BanIcon className="h-5 w-5 mr-2 text-amber-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      Total Penalties
+                    </p>
+                    <p className="font-bold text-amber-700">
+                      ৳ {totalContribution?.penalties?.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center p-3 rounded-lg bg-blue-50 border border-blue-100">
+                  <WalletIcon className="h-5 w-5 mr-2 text-blue-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      Current Balance
+                    </p>
+                    <p className="font-bold text-blue-700">
+                      ৳ {totalContribution?.balance?.toLocaleString()}
+                    </p>
+                  </div>
                 </div>
               </div>
 
+              {/* User Information */}
               <div className="space-y-2 mb-6">
-                <h3 className="text-lg font-semibold">User Information</h3>
-                <div className="grid grid-cols-3 gap-2 py-2">
-                  <span className="text-muted-foreground">Uid</span>
-                  <span className="col-span-2 flex justify-between">
-                    {result?._id}
-                    {/* <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button> */}
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 py-2">
-                  <span className="text-muted-foreground">Name</span>
-                  <span className="col-span-2 flex justify-between">
-                    {result?.name}
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 py-2">
-                  <span className="text-muted-foreground">Email</span>
-                  <span className="col-span-2 flex justify-between">
-                    {result?.email}
-                  </span>
-                </div>
-                {/* <div className="grid grid-cols-3 gap-2 py-2">
-                  <span className="text-muted-foreground">Date of Birth</span>
-                  <span className="col-span-2 flex justify-between">
-                    {result?.dateOfBirth}
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 py-2">
-                  <span className="text-muted-foreground">Gender</span>
-                  <span className="col-span-2 flex justify-between">
-                    {result?.gender}
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                  </span>
-                </div> */}
-                <div className="grid grid-cols-3 gap-2 py-2">
-                  <span className="text-muted-foreground">Mobile</span>
-                  <span className="col-span-2 flex justify-between">
-                    {result?.phoneNumber}
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 py-2">
-                  <span className="text-muted-foreground">Last Login Date</span>
-                  <span className="col-span-2 flex justify-between">
-                    {result?.lastLoginAt
-                      ? format(new Date(result.lastLoginAt), "dd MMM yyyy")
-                      : "N/A"}
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 py-2">
-                  <span className="text-muted-foreground">Join Date</span>
-                  <span className="col-span-2 flex justify-between">
-                    {result?.createdAt
-                      ? format(new Date(result.createdAt), "dd MMM yyyy")
-                      : "N/A"}
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                  </span>
-                </div>
+                <h3 className="text-lg font-semibold flex items-center">
+                  <UserIcon className="h-4 w-4 mr-2" /> User Information
+                </h3>
+                <Card className="border-dashed">
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between py-1 group">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
+                            UID
+                          </span>
+                          <span className="text-sm truncate max-w-[180px]">
+                            {result?._id}
+                          </span>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => copyToClipboard(result?._id)}
+                              >
+                                <CopyIcon className="h-3.5 w-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Copy ID</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+
+                      <div className="flex items-center justify-between py-1 group">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
+                            Name
+                          </span>
+                          <span className="text-sm">{result?.name}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between py-1 group">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
+                            <MailIcon className="h-3 w-3 inline mr-1" />
+                          </span>
+                          <span className="text-sm">{result?.email}</span>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => copyToClipboard(result?.email)}
+                              >
+                                <CopyIcon className="h-3.5 w-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Copy Email</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+
+                      <div className="flex items-center justify-between py-1 group">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
+                            <PhoneIcon className="h-3 w-3 inline mr-1" />
+                          </span>
+                          <span className="text-sm">{result?.phoneNumber}</span>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Edit className="h-3.5 w-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Edit Phone Number</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+
+                      <Separator className="my-1" />
+
+                      <div className="flex items-center justify-between py-1 group">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
+                            <CalendarIcon className="h-3 w-3 inline mr-1" />{" "}
+                            Last Login
+                          </span>
+                          <span className="text-sm">
+                            {result?.lastLoginAt
+                              ? format(
+                                  new Date(result.lastLoginAt),
+                                  "dd MMM yyyy"
+                                )
+                              : "N/A"}
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between py-1 group">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
+                            <CalendarIcon className="h-3 w-3 inline mr-1" />{" "}
+                            Join Date
+                          </span>
+                          <span className="text-sm">
+                            {result?.createdAt
+                              ? format(
+                                  new Date(result.createdAt),
+                                  "dd MMM yyyy"
+                                )
+                              : "N/A"}
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
 
-              <div className="flex justify-center space-x-4 my-6">
+              {/* Action Buttons */}
+              <div className="flex justify-center space-x-2 md:space-x-4 my-6">
                 <DepositModal member={result} refetch={refetch} />
                 <WithdrawModal
                   member={result}
                   refetch={refetch}
                   totalContribution={totalContribution}
                 />
+                <PenaltyModal member={result} refetch={refetch} />
               </div>
             </CardContent>
           </Card>
-
-          {/* <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-md font-semibold flex items-center">
-                    <MapPin className="h-4 w-4 mr-2" /> Present Address
-                  </h3>
-                  <p className="text-sm mt-1 flex justify-between">
-                    {member.presentAddress}
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                  </p>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="text-md font-semibold flex items-center">
-                    <MapPin className="h-4 w-4 mr-2" /> Permanent Address
-                  </h3>
-                  <p className="text-sm mt-1 flex justify-between">
-                    {member.permanentAddress}
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
         </div>
 
         {/* Right Column - Transaction History */}
@@ -305,7 +441,7 @@ function MemberProfilePage() {
               <CardTitle className="text-xl flex items-center">
                 <span className="mr-2">Latest Transactions</span>
                 <Badge variant="outline" className="ml-auto">
-                  Total: ৳ {totalContribution.toLocaleString()}
+                  Total: ৳ {totalContribution?.balance?.toLocaleString()}
                 </Badge>
               </CardTitle>
             </CardHeader>

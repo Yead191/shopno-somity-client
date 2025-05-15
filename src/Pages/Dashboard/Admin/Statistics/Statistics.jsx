@@ -106,7 +106,7 @@ function Statistics() {
     {
       id: 5,
       label: "Penalties",
-      count: overviewStats?.totalPenalties,
+      count: overviewStats?.totalPenaltyCount,
       color: "bg-purple-100 text-purple-800",
     },
     {
@@ -171,7 +171,13 @@ function Statistics() {
                   ৳{overviewStats?.totalWithdrawals?.toLocaleString()}
                 </p>
               </div>
-              <div className="bg-green-50 rounded-lg p-4 col-span-2">
+              <div className="bg-yellow-50 rounded-lg p-4 ">
+                <p className="text-sm text-muted-foreground">Total Penalties</p>
+                <p className="text-xl font-bold">
+                  ৳{overviewStats?.totalPenalties?.toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-green-50 rounded-lg p-4 ">
                 <p className="text-sm text-muted-foreground">Total Balance</p>
                 <p className="text-xl font-bold">
                   ৳{overviewStats?.currentBalance?.toLocaleString()}
@@ -200,7 +206,7 @@ function Statistics() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-y-scroll ">
               {adminReport?.map((admin, index) => (
                 <div
                   key={index}
@@ -237,9 +243,13 @@ function Statistics() {
                       <span className="font-semibold">Withdrawals:</span> ৳
                       {admin.totalWithdrawals.toLocaleString()}
                     </p>
-                    <Badge variant="outline" className="mt-1">
+                    <p className="text-sm">
+                      <span className="font-semibold">Penalties:</span> ৳
+                      {admin?.totalPenalties?.toLocaleString()}
+                    </p>
+                    {/* <Badge variant="outline" className="mt-1">
                       Admin
-                    </Badge>
+                    </Badge> */}
                   </div>
                 </div>
               ))}

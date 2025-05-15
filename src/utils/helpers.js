@@ -1,18 +1,32 @@
-export function calculateTotalContribution(transactions) {
-  return transactions.reduce((total, transaction) => {
-    // Ensure transaction has valid type and amount
-    if (!transaction?.type || typeof transaction.amount !== "number") {
-      return total;
-    }
+export function calculateTransactionSummary(transactions) {
+  return transactions.reduce(
+    (summary, transaction) => {
+      // Ensure transaction has valid type and amount
+      if (!transaction?.type || typeof transaction.amount !== "number") {
+        return summary;
+      }
 
-    // Add for Deposit, subtract for Withdraw
-    if (transaction.type.toLowerCase() === "deposit") {
-      return total + transaction.amount;
-    } else if (transaction.type.toLowerCase() === "withdraw") {
-      return total - transaction.amount;
-    }
+      const type = transaction.type.toLowerCase();
 
-    // Ignore other transaction types
-    return total;
-  }, 0);
+      // Update amounts based on transaction type
+      if (type === "deposit") {
+        summary.deposits += transaction.amount;
+        summary.balance += transaction.amount;
+      } else if (type === "withdraw") {
+        summary.withdrawals += transaction.amount;
+        summary.balance -= transaction.amount;
+      } else if (type === "penalty") {
+        summary.penalties += transaction.amount;
+        // Penalty not added or subtracted from balance as per request
+      }
+
+      return summary;
+    },
+    {
+      deposits: 0,
+      withdrawals: 0,
+      penalties: 0,
+      balance: 0,
+    }
+  );
 }

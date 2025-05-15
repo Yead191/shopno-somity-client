@@ -14,37 +14,46 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 
 const SettingsModal = ({ open, setOpen, member, refetch }) => {
-  //   console.log(member);
   const [role, setRole] = useState("");
   const [isActive, setIsActive] = useState("");
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
-    setRole(member.role);
-    setIsActive(member.isActive ?? true);
-  }, [member._id]);
+    setRole(member?.role || "user");
+    setIsActive(member?.isActive ?? true);
+    setName(member?.name || "");
+    setPhoneNumber(member?.phoneNumber || "");
+  }, [member?._id]);
 
   const handleUpdate = () => {
     toast.promise(
       axiosSecure.patch(`/users/update-status/${member._id}`, {
         role,
         isActive,
+        name,
+        phoneNumber,
       }),
       {
         loading: "Updating Status...",
-        success: () => {
-          setOpen(false);
-          refetch();
-          return <b>Member updated successfully!</b>;
+        success: (response) => {
+          if (response.data.modifiedCount > 0) {
+            setOpen(false);
+            refetch();
+            return <b>Member updated successfully!</b>;
+          }
+          return "No changes made.";
         },
         error: (error) => {
           console.error(error);
-          return "Failed to update member";
+          return error.response?.data?.error || "Failed to update member";
         },
       }
     );
@@ -57,7 +66,26 @@ const SettingsModal = ({ open, setOpen, member, refetch }) => {
           <DialogTitle>Edit Member Settings</DialogTitle>
         </DialogHeader>
 
-        <div className="flex justify-between items-center">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-2">
+            <Label>Name</Label>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter name"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label>Phone Number</Label>
+            <Input
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="Enter phone number"
+              type="tel"
+            />
+          </div>
+
           <div className="flex flex-col gap-2">
             <Label>Change Role</Label>
             <Select value={role} onValueChange={setRole}>
@@ -87,6 +115,7 @@ const SettingsModal = ({ open, setOpen, member, refetch }) => {
             </Select>
           </div>
         </div>
+
         <DialogFooter>
           <Button
             onClick={handleUpdate}

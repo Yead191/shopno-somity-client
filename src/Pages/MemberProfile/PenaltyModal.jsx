@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowDownCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { addTransaction } from "@/api/transactions";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
@@ -25,11 +25,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-function WithdrawModal({ member, refetch, totalContribution }) {
+function PenaltyModal({ member, refetch }) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [penaltyReason, setPenaltyReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const axiosSecure = useAxiosSecure();
   const user = useAuthUser();
@@ -37,14 +37,11 @@ function WithdrawModal({ member, refetch, totalContribution }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!amount || Number.parseFloat(amount) <= 0) {
-      toast.error("Please enter a valid amount greater than 0");
+      toast.error("Please enter a valid penalty amount greater than 0");
       return;
     }
-    if (totalContribution < amount) {
-      return toast.error("Don't have enough money to deposit");
-    }
-    if (!paymentMethod) {
-      toast.error("Please select a payment method");
+    if (!penaltyReason) {
+      toast.error("Please select a penalty reason");
       return;
     }
     setIsSubmitting(true);
@@ -55,28 +52,30 @@ function WithdrawModal({ member, refetch, totalContribution }) {
         memberEmail: member.email,
         memberId: member._id,
         amount: Number.parseFloat(amount),
-        type: "Withdraw",
+        type: "Penalty",
         date,
-        paymentMethod,
+        penaltyReason,
         approvedBy: user.displayName,
         approvedByEmail: user.email,
       };
 
       toast.promise(axiosSecure.post("/transactions", transaction), {
-        loading: "Loading transaction...",
+        loading: "Processing penalty...",
         success: () => {
           refetch();
           setOpen(false);
           setAmount("");
+          setPenaltyReason("");
           return (
             <b>
-              Successfully withdraw {Number.parseFloat(amount).toLocaleString()}
+              Successfully imposed penalty of{" "}
+              {Number.parseFloat(amount).toLocaleString()}
             </b>
           );
         },
       });
     } catch (error) {
-      toast.error("Failed to process withdrawal. Please try again.");
+      toast.error("Failed to process penalty. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -86,20 +85,20 @@ function WithdrawModal({ member, refetch, totalContribution }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size={"sm"} className={"cursor-pointer"} variant="destructive">
-          <ArrowDownCircle className="mr-2 h-4 w-4" /> Withdraw
+          <AlertCircle className="mr-2 h-4 w-4" /> Penalty
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Make a Withdrawal</DialogTitle>
+          <DialogTitle>Impose a Penalty</DialogTitle>
           <DialogDescription>
-            Fill out the form below to withdraw money from the member's account.
+            Fill out the form below to impose a penalty on the member's account.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-6 items-center gap-4">
-              <Label htmlFor="date" className="text-right col-span-2 ">
+              <Label htmlFor="date" className="text-right col-span-2">
                 Date
               </Label>
               <Input
@@ -127,31 +126,32 @@ function WithdrawModal({ member, refetch, totalContribution }) {
                 required
               />
             </div>
-            <div className="flex  items-center gap-4">
-              <Label htmlFor="paymentMethod" className="text-right ">
-                Payment Method
+            <div className="flex items-center gap-4">
+              <Label htmlFor="penaltyReason" className="text-right">
+                Penalty Reason
               </Label>
               <Select
-                id="paymentMethod"
-                value={paymentMethod}
-                onValueChange={setPaymentMethod}
+                id="penaltyReason"
+                value={penaltyReason}
+                onValueChange={setPenaltyReason}
                 className="w-full"
                 required
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select payment method" />
+                  <SelectValue placeholder="Select penalty reason" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
-                  <SelectItem value="Cash">Cash</SelectItem>
-                  <SelectItem value="Mobile Banking">Mobile Banking</SelectItem>
+                  <SelectItem value="Late Payment">Late Payment</SelectItem>
+                  <SelectItem value="Rule Violation">Rule Violation</SelectItem>
+                  <SelectItem value="Missed Meeting">Missed Meeting</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
             <Button type="submit" variant="destructive" disabled={isSubmitting}>
-              {isSubmitting ? "Processing..." : "Withdraw"}
+              {isSubmitting ? "Processing..." : "Impose Penalty"}
             </Button>
           </DialogFooter>
         </form>
@@ -160,9 +160,13 @@ function WithdrawModal({ member, refetch, totalContribution }) {
   );
 }
 
-WithdrawModal.propTypes = {
-  memberId: PropTypes.string.isRequired,
-  onTransactionAdded: PropTypes.func,
+PenaltyModal.propTypes = {
+  member: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+  }).isRequired,
+  refetch: PropTypes.func.isRequired,
 };
 
-export default WithdrawModal;
+export default PenaltyModal;

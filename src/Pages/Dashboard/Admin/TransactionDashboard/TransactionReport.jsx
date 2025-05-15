@@ -12,6 +12,7 @@ import {
   FileText,
   Printer,
   Eye,
+  BanIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -300,6 +301,9 @@ function TransactionReport() {
   const totalWithdrawals = transactions
     .filter((t) => t.type === "Withdraw")
     .reduce((sum, t) => sum + t.amount, 0);
+  const totalPenalties = transactions
+    .filter((t) => t.type === "Penalty")
+    .reduce((sum, t) => sum + t.amount, 0);
 
   const balance = totalDeposits - totalWithdrawals;
 
@@ -424,7 +428,7 @@ function TransactionReport() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -453,6 +457,21 @@ function TransactionReport() {
               </div>
               <div className="p-3 rounded-full bg-red-100">
                 <ArrowDownCircle className="h-6 w-6 text-red-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Penalties</p>
+                <h3 className="text-2xl font-bold text-purple-500">
+                  ৳{totalPenalties?.toLocaleString()}
+                </h3>
+              </div>
+              <div className="p-3 rounded-full bg-purple-50">
+                <BanIcon className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </CardContent>

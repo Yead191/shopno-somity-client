@@ -36,7 +36,7 @@ export function MemberList({ members }) {
                 .toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <div>
+          <div className="flex-grow">
             <p className="font-medium text-sm">{member?.name}</p>
             <p className="text-xs text-muted-foreground">
               {member?.phoneNumber}

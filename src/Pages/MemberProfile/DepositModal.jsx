@@ -83,7 +83,7 @@ function DepositModal({ member, refetch }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-green-600 hover:bg-green-700 cursor-pointer">
+        <Button size={"sm"} className="bg-green-600 hover:bg-green-700 cursor-pointer">
           <ArrowUpCircle className="mr-2 h-4 w-4" /> Deposit
         </Button>
       </DialogTrigger>
