@@ -116,23 +116,16 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
     });
   };
 
-  // Copy to Clipboard
   const copyToClipboard = (text, type) => {
+    console.log(text, type);
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        toast({
-          title: "Copied to clipboard!",
-          description: `${type} has been copied successfully.`,
-          variant: "success",
-        });
+        toast.success("Copied Successfully!")
       })
-      .catch(() => {
-        toast({
-          title: "Copy failed",
-          description: `Unable to copy ${type} to clipboard.`,
-          variant: "destructive",
-        });
+      .catch((err) => {
+        toast.error("Unable to copy. Try Again!");
+        console.error("Clipboard error:", err);
       });
   };
 
@@ -241,7 +234,7 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
         `${import.meta.env.VITE_API_URL}/users/assign-user`,
         user
       );
-      console.log(data);
+      // console.log(data);
       // Check for success based on response structure
       if (
         data?.firestore?.insertedId ||
