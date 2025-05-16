@@ -28,20 +28,27 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthUser, logOut } from "@/redux/auth/authAction";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import useProfile from "@/hooks/useProfile";
+import { UpdateProfileModal } from "@/Pages/Dashboard/User/UpdateProfileModal";
 
 export function NavUser() {
   // const { isMobile } = useSidebar();
   const user = useAuthUser();
   const dispatch = useDispatch();
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
+  const [result, transactions, message, memberLoading, refetch] = useProfile();
+  // console.log(result);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
+      <SidebarMenuItem modal={false}>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               tooltip="My Account"
@@ -53,6 +60,7 @@ export function NavUser() {
                   referrerPolicy="no-referrer"
                   src={user?.photoURL}
                   alt={user?.name}
+                  className={"object-cover"}
                 />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
@@ -106,7 +114,10 @@ export function NavUser() {
                     Dashboard
                   </DropdownMenuItem>
                 </Link>
-                <DropdownMenuItem onClick={() => setIsOpen(!isOpen)}>
+                <DropdownMenuItem
+                  disabled={memberLoading}
+                  onClick={() => setIsModalOpen(true)}
+                >
                   <UserPen />
                   Update Profile
                 </DropdownMenuItem>
@@ -135,7 +146,12 @@ export function NavUser() {
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
-      {/* <UpdateUserProfile isOpen={isOpen} setIsOpen={setIsOpen} /> */}
+      <UpdateProfileModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        defaultValues={result}
+        refetch={refetch}
+      />
     </SidebarMenu>
   );
 }

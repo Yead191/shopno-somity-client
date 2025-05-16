@@ -35,12 +35,15 @@ import Spinner from "@/components/Spinner";
 import PenaltyModal from "./PenaltyModal";
 import { calculateTransactionSummary } from "@/utils/helpers";
 import { toast } from "sonner";
+import { useAuthUser } from "@/redux/auth/authAction";
+import { UpdateProfileModal } from "../Dashboard/User/UpdateProfileModal";
 
 function MemberProfilePage() {
   const { id } = useParams();
+  const user = useAuthUser();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // const [member, setMember] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshData, setRefreshData] = useState(0);
   const axiosSecure = useAxiosSecure();
   // console.log(id);
   const {
@@ -48,120 +51,17 @@ function MemberProfilePage() {
     isLoading: memberLoading,
     refetch,
   } = useQuery({
-    queryKey: ["member", id],
+    queryKey: ["member", id, user?.email],
     queryFn: async () => {
-      const { data } = await axiosSecure(`/users/profile/${id}`);
+      const { data } = await axiosSecure(
+        `/users/profile/${id}?email=${user?.email}`
+      );
       return data;
     },
   });
   // console.log(member.result);
 
   const { result = {}, transactions = [], message = "" } = member || {};
-  // console.log(result);
-  // useEffect(() => {
-  //   // Simulate API call
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       // In a real app, this would be an API call
-  //       const data = getMemberData(id);
-  //       setMember(data);
-  //     } catch (error) {
-  //       console.error("Error fetching member data:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [id, refreshData]);
-
-  // const transactions = [
-  //   {
-  //     id: 1,
-  //     date: "2024-02-09",
-  //     type: "Investment Profit",
-  //     amount: 910.8,
-  //     status: "Approved",
-  //     isDeposit: true,
-  //   },
-  //   {
-  //     id: 2,
-  //     date: "2024-12-18",
-  //     type: "Investment Deposit",
-  //     amount: 3000,
-  //     status: "Approved",
-  //     isDeposit: true,
-  //   },
-  //   {
-  //     id: 3,
-  //     date: "2024-12-18",
-  //     type: "Investment Deposit",
-  //     amount: 1297.0,
-  //     status: "Approved",
-  //     isDeposit: true,
-  //   },
-  //   {
-  //     id: 4,
-  //     date: "2024-12-18",
-  //     type: "Investment Withdrawal",
-  //     amount: -31209.0,
-  //     status: "Approved",
-  //     isDeposit: false,
-  //   },
-  //   {
-  //     id: 5,
-  //     date: "2024-11-23",
-  //     type: "Investment Profit",
-  //     amount: 28039.0,
-  //     status: "Approved",
-  //     isDeposit: true,
-  //   },
-  //   {
-  //     id: 6,
-  //     date: "2024-11-23",
-  //     type: "Investment Profit",
-  //     amount: 2470.0,
-  //     status: "Approved",
-  //     isDeposit: true,
-  //   },
-  //   {
-  //     id: 7,
-  //     date: "2024-10-29",
-  //     type: "Investment Withdrawal",
-  //     amount: -300.0,
-  //     status: "Approved",
-  //     isDeposit: false,
-  //   },
-  //   {
-  //     id: 8,
-  //     date: "2024-10-29",
-  //     type: "Investment Withdrawal",
-  //     amount: -300.0,
-  //     status: "Approved",
-  //     isDeposit: false,
-  //   },
-  //   {
-  //     id: 9,
-  //     date: "2024-08-21",
-  //     type: "Investment Withdrawal",
-  //     amount: -20000.0,
-  //     status: "Approved",
-  //     isDeposit: false,
-  //   },
-  //   {
-  //     id: 10,
-  //     date: "2024-07-02",
-  //     type: "Investment Withdrawal",
-  //     amount: -300.0,
-  //     status: "Approved",
-  //     isDeposit: false,
-  //   },
-  // ];
-  const handleTransactionAdded = () => {
-    // Refresh data when a transaction is added
-    setRefreshData((prev) => prev + 1);
-  };
 
   if (memberLoading) {
     return <Spinner />;
@@ -186,6 +86,13 @@ function MemberProfilePage() {
       });
   };
 
+  // const handleUpdateProfile = (email) => {
+  //   console.log(email, "clicked Update Profile");
+  // };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -193,13 +100,13 @@ function MemberProfilePage() {
         <div className="md:col-span-1 space-y-6">
           <Card className="overflow-hidden border shadow-md py-0">
             {/* Header with avatar and name */}
-            <CardHeader className="py-2  bg-gradient-to-r from-slate-50 to-slate-100">
+            <CardHeader className="py-2  bg-gradient-to-r from-slate-50 to-slate-100 group flex justify-between items-center">
               <div className="flex gap-2 items-center">
                 <Avatar className="h-24 w-24 border-4 border-primary/10 ">
                   <img
                     src={result?.photo || "/placeholder.svg?height=96&width=96"}
                     alt={result.name}
-                    className="object-cover object-center"
+                    className="object-cover object-center w-full"
                   />
                 </Avatar>
                 <div className="mt-4 text-left">
@@ -209,6 +116,16 @@ function MemberProfilePage() {
                   </Badge>
                 </div>
               </div>
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                variant="ghost"
+                size="icon"
+                className={`h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity ${
+                  user?.email !== result.email && "hidden"
+                }`}
+              >
+                <Edit className="h-3.5 w-3.5" />
+              </Button>
             </CardHeader>
 
             <CardContent className="pt-2">
@@ -451,6 +368,14 @@ function MemberProfilePage() {
           </Card>
         </div>
       </div>
+
+      {/* update modal */}
+      <UpdateProfileModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        defaultValues={result}
+        refetch={refetch}
+      />
     </div>
   );
 }

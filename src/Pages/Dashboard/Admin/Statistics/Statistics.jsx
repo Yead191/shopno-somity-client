@@ -258,6 +258,8 @@ function Statistics() {
         </Card>
       </div>
 
+      
+      {/* todo: link to profile */}
       {/* Active Members Section */}
       <Card>
         <CardHeader className="pb-2">

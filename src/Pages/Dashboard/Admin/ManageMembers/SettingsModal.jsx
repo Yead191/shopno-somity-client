@@ -18,12 +18,16 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
+import { Upload } from "lucide-react";
+import { imgUpload } from "@/components/imgUpload";
 
 const SettingsModal = ({ open, setOpen, member, refetch }) => {
   const [role, setRole] = useState("");
   const [isActive, setIsActive] = useState("");
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [preview, setPreview] = useState(null);
   const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
@@ -31,16 +35,44 @@ const SettingsModal = ({ open, setOpen, member, refetch }) => {
     setIsActive(member?.isActive ?? true);
     setName(member?.name || "");
     setPhoneNumber(member?.phoneNumber || "");
+    setPhoto(null);
+    setPreview(member?.photoURL || null);
   }, [member?._id]);
 
-  const handleUpdate = () => {
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUpdate = async () => {
+    let photoURL = member?.photoURL;
+    if (photo) {
+      try {
+        photoURL = await imgUpload(photo);
+        console.log(await photoURL);
+      } catch (error) {
+        toast.error("Failed to upload photo");
+        return;
+      }
+    }
+
+    const updateData = {
+      role,
+      isActive,
+      name,
+      phoneNumber,
+      ...(photoURL && { photoURL }),
+    };
+
     toast.promise(
-      axiosSecure.patch(`/users/update-status/${member._id}`, {
-        role,
-        isActive,
-        name,
-        phoneNumber,
-      }),
+      axiosSecure.patch(`/users/update-status/${member._id}`, updateData),
       {
         loading: "Updating Status...",
         success: (response) => {
@@ -113,6 +145,35 @@ const SettingsModal = ({ open, setOpen, member, refetch }) => {
                 <SelectItem value="false">Inactive</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex flex-col gap-2 col-span-2 w-full">
+            {/* <Label>Profile Photo</Label> */}
+            <div className="flex items-center gap-2">
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Profile preview"
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+              )}
+              <div className="relative w-full">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="hidden w-full"
+                  id="photo-upload"
+                />
+                <Label
+                  htmlFor="photo-upload"
+                  className="cursor-pointer flex items-center gap-2 bg-secondary text-secondary-foreground px-4 py-2 rounded-md justify-center"
+                >
+                  <Upload className="w-4 h-4" />
+                  Upload Photo
+                </Label>
+              </div>
+            </div>
           </div>
         </div>
 

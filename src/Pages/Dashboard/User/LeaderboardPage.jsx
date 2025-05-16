@@ -1,5 +1,13 @@
 import { formatDistanceToNow } from "date-fns";
-import { Award, Calendar, Mail, Medal, Phone, Trophy } from "lucide-react";
+import {
+  Award,
+  Calendar,
+  Mail,
+  Medal,
+  Phone,
+  Trophy,
+  Users,
+} from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -15,6 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAxiosPublic } from "@/hooks/useAxiosPublic";
 import DashboardPagesHeader from "@/components/DashboardPagesHeader";
 import { Link } from "react-router-dom";
+import Spinner from "@/components/Spinner";
 
 // Demo data
 // const leaderboardData = [
@@ -62,16 +71,33 @@ import { Link } from "react-router-dom";
 
 export default function LeaderboardPage() {
   const axiosPublic = useAxiosPublic();
-  const { data: leaderboardData = [] } = useQuery({
-    queryKey: ["leaderboardData"],
+  const { data: leaderboardData = [], isLoading: leaderboardLoading } =
+    useQuery({
+      queryKey: ["leaderboardData"],
+      queryFn: async () => {
+        const { data } = await axiosPublic.get("/leaderboard");
+        return data.data;
+      },
+    });
+
+  const {
+    data: overviewStats = {},
+    isLoading: statsLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["overviewStats"],
     queryFn: async () => {
-      const { data } = await axiosPublic.get("/leaderboard");
-      return data.data;
+      const { data } = await axiosPublic.get("/statistics");
+      return data;
     },
   });
   const maxContribution = Math.max(
     ...leaderboardData?.map((user) => user.totalContribution)
   );
+
+  if (leaderboardLoading || statsLoading) {
+    return <Spinner />;
+  }
   return (
     <div className="container mx-auto max-w-6xl px-2 md:px-6">
       <DashboardPagesHeader
@@ -81,6 +107,57 @@ export default function LeaderboardPage() {
           "Track top contributors and their financial activities. Leaders are ranked based on their total contributions."
         }
       />
+
+      {/* Overview Section */}
+      <div className="grid grid-cols-1 gap-6 mt-8">
+        <Card className="md:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-medium flex items-center">
+              <Users className="mr-2 h-5 w-5" /> Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="bg-blue-50 rounded-lg p-4">
+                <p className="text-sm text-muted-foreground">Total Deposits</p>
+                <p className="text-xl font-bold">
+                  ৳{overviewStats?.totalDeposits?.toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-red-100 text-red-800 rounded-lg p-4">
+                <p className="text-sm text-muted-foreground">Total Withdraw</p>
+                <p className="text-xl font-bold">
+                  ৳{overviewStats?.totalWithdrawals?.toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-yellow-50 rounded-lg p-4 ">
+                <p className="text-sm text-muted-foreground">Total Penalties</p>
+                <p className="text-xl font-bold">
+                  ৳{overviewStats?.totalPenalties?.toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-green-50 rounded-lg p-4 ">
+                <p className="text-sm text-muted-foreground">Total Balance</p>
+                <p className="text-xl font-bold">
+                  ৳{overviewStats?.currentBalance?.toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-purple-50 rounded-lg p-4">
+                <p className="text-sm text-muted-foreground">Total Admins</p>
+                <p className="text-xl font-bold">
+                  {overviewStats?.totalAdmins}
+                </p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-sm text-muted-foreground">Total Members</p>
+                <p className="text-xl font-bold">
+                  {overviewStats?.totalMembers}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <Tabs
         defaultValue="leaderboard"

@@ -7,6 +7,7 @@ import { Phone } from "lucide-react";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/Spinner";
+import { Link } from "react-router-dom";
 
 export function MemberList({ members }) {
   const handleCall = (number) => {
@@ -36,12 +37,15 @@ export function MemberList({ members }) {
                 .toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-grow">
+          <Link
+            to={`/dashboard/member-profile/${member._id}`}
+            className="flex-grow"
+          >
             <p className="font-medium text-sm">{member?.name}</p>
             <p className="text-xs text-muted-foreground">
               {member?.phoneNumber}
             </p>
-          </div>
+          </Link>
           <Button
             onClick={() => handleCall(member?.phoneNumber)}
             variant="outline"
