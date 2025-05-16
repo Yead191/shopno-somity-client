@@ -5,9 +5,7 @@ import { FaFileUpload } from "react-icons/fa";
 import { IoCloseOutline, IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { MdDelete, MdDone, MdLocalPhone, MdOutlineMail } from "react-icons/md";
 import { RiAccountCircleLine, RiLockPasswordLine } from "react-icons/ri";
-import { useNavigate } from "react-router";
 import AuthHeader from "./AuthHeader";
-import { RxCross1 } from "react-icons/rx";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/auth/authSlice";
 import NavigateTo from "./NavigateTo";
@@ -17,6 +15,7 @@ import auth from "@/firebase/firebase.init";
 import { toast } from "sonner";
 import IsError from "./IsError";
 import SocialLogin from "./SocialLogin";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const navigate = useNavigate();
