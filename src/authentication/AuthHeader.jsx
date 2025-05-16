@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
 import logo from "/logo-oli.png";
 import { IoIosLogIn } from "react-icons/io";
-import { Link, useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
+
 
 const AuthHeader = () => {
     const location = useLocation();

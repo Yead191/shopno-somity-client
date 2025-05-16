@@ -5,12 +5,11 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import axios from "axios";
-import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useAxiosPublic } from "@/hooks/useAxiosPublic";
 import auth from "@/firebase/firebase.init";
 import { Separator } from "@/components/ui/separator";
+import { useNavigate } from "react-router-dom";
 
 const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
