@@ -792,15 +792,23 @@ function TransactionReport() {
                                       {selectedTransaction.approvedByEmail}
                                     </p>
                                   </div>
-                                  <DialogFooter>
+                                  <DialogFooter
+                                    className={
+                                      "flex items-center flex-col md:flex-row"
+                                    }
+                                  >
                                     <Link
+                                      className={"w-full md:w-auto"}
                                       to={`/dashboard/member-profile/${selectedTransaction.memberId}`}
                                     >
-                                      <Button variant={"outline"}>
+                                      <Button variant={"outline"} 
+                                      className={"w-full md:w-auto"}
+                                      >
                                         View Profile
                                       </Button>
                                     </Link>
                                     <Button
+                                      className={"w-full md:w-auto"}
                                       onClick={() =>
                                         handleDelete(selectedTransaction._id)
                                       }

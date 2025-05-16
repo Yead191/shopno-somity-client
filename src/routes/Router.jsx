@@ -14,6 +14,7 @@ import ManageUsers from "@/Pages/Dashboard/Admin/ManageMembers/ManageMembers";
 import MemberProfilePage from "@/Pages/MemberProfile/MemberProfile";
 import TransactionDashboard from "@/Pages/Dashboard/Admin/TransactionDashboard/TransactionDashboard";
 import Statistics from "@/Pages/Dashboard/Admin/Statistics/Statistics";
+import LeaderboardPage from "@/Pages/Dashboard/User/LeaderboardPage";
 
 const Router = () => {
   const dispatch = useDispatch();
@@ -77,6 +78,9 @@ const Router = () => {
           />
           <Route path="admin/statistics" element={<Statistics />} />
           <Route path="member-profile/:id" element={<MemberProfilePage />} />
+
+          {/* user routes */}
+          <Route path="leaderboard" element={<LeaderboardPage />} />
         </Route>
       </Routes>
     </>

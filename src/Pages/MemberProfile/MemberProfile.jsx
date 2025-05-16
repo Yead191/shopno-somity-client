@@ -421,7 +421,7 @@ function MemberProfilePage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-center space-x-2 md:space-x-4 my-6">
+              <div className="flex justify-center space-x-2 md:space-x-4 my-6 print:hidden">
                 <DepositModal member={result} refetch={refetch} />
                 <WithdrawModal
                   member={result}

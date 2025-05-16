@@ -7,6 +7,7 @@ import {
   LayoutGrid,
   Logs,
   TicketSlash,
+  Trophy,
   UserRoundCog,
 } from "lucide-react";
 
@@ -51,9 +52,15 @@ const items = [
     role: "admin",
   },
   {
-    title: "Payment History",
-    url: "/dashboard/manage/users/payments",
-    icon: CreditCard,
+    title: "Leaderboard",
+    url: "/dashboard/leaderboard",
+    icon: Trophy,
+    role: "admin",
+  },
+  {
+    title: "Leaderboard",
+    url: "/dashboard/leaderboard",
+    icon: Trophy,
     role: "user",
   },
 ];
