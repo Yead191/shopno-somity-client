@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { MdOutlineMail } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
-import { useNavigate } from "react-router";
+
 import { signInWithEmailAndPassword } from "firebase/auth";
-import axios from "axios";
 import { toast } from "sonner";
 import IsError from "./IsError";
 import auth from "@/firebase/firebase.init";
@@ -12,6 +10,8 @@ import AuthHeader from "./AuthHeader";
 import NavigateTo from "./NavigateTo";
 import { useAuthUser } from "@/redux/auth/authAction";
 import SocialLogin from "./SocialLogin";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Login = () => {
   const user = useAuthUser();
