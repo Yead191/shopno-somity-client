@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { useAuthUser } from "@/redux/auth/authAction";
 import { updateProfile } from "firebase/auth";
 import auth from "@/firebase/firebase.init";
+import Spinner from "@/components/Spinner";
 
 export function UpdateProfileModal({
   isOpen,
@@ -28,13 +29,21 @@ export function UpdateProfileModal({
   defaultValues = {},
   refetch,
 }) {
+  // console.log(defaultValues);
   const axiosSecure = useAxiosSecure();
   const user = useAuthUser();
-  const [name, setName] = useState(defaultValues.name || "");
-  const [number, setNumber] = useState(defaultValues.phoneNumber || "");
-  const [photoUrl, setPhotoUrl] = useState(defaultValues.photo || "");
-  const [previewUrl, setPreviewUrl] = useState(defaultValues.photo || "");
+  const [name, setName] = useState(defaultValues?.name || "");
+  const [number, setNumber] = useState(defaultValues?.phoneNumber || "");
+  const [photoUrl, setPhotoUrl] = useState(defaultValues?.photo || "");
+  const [previewUrl, setPreviewUrl] = useState(defaultValues?.photo || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    setName(defaultValues.name);
+    setNumber(defaultValues.phoneNumber);
+    setPhotoUrl(defaultValues.photo);
+    setPreviewUrl(defaultValues.photo);
+  }, [user?.email, isOpen]);
 
   const handlePhotoChange = async (e) => {
     const file = e.target.files?.[0];
@@ -106,6 +115,7 @@ export function UpdateProfileModal({
                 <AvatarImage
                   src={previewUrl || "/placeholder.svg"}
                   alt="Profile"
+                  className={"object-cover"}
                 />
                 <AvatarFallback>
                   <User className="h-12 w-12 text-muted-foreground" />

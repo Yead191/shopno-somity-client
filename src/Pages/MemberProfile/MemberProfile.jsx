@@ -54,7 +54,7 @@ function MemberProfilePage() {
     queryKey: ["member", id, user?.email],
     queryFn: async () => {
       const { data } = await axiosSecure(
-        `/users/profile/${id}?email=${user?.email}`
+        `/users/profile/${id ? id : `id?email=${user?.email}`}`
       );
       return data;
     },
@@ -120,7 +120,7 @@ function MemberProfilePage() {
                 onClick={() => setIsModalOpen(true)}
                 variant="ghost"
                 size="icon"
-                className={`h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity ${
+                className={`h-6 w-6 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity ${
                   user?.email !== result.email && "hidden"
                 }`}
               >

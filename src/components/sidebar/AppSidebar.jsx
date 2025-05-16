@@ -8,6 +8,7 @@ import {
   Logs,
   TicketSlash,
   Trophy,
+  User,
   UserRoundCog,
 } from "lucide-react";
 
@@ -58,6 +59,12 @@ const items = [
     role: "admin",
   },
   {
+    title: "Profile",
+    url: "/dashboard/profile",
+    icon: User,
+    role: "user",
+  },
+  {
     title: "Leaderboard",
     url: "/dashboard/leaderboard",
     icon: Trophy,
@@ -67,7 +74,7 @@ const items = [
 
 export function AppSidebar() {
   // const { role } = useRole();
-  const role = "admin";
+  const role = "user";
   const { state, toggleSidebar } = useSidebar();
   // console.log(state);
   return (

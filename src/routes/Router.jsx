@@ -81,6 +81,7 @@ const Router = () => {
 
           {/* user routes */}
           <Route path="leaderboard" element={<LeaderboardPage />} />
+          <Route path="profile" element={<MemberProfilePage />} />
         </Route>
       </Routes>
     </>
