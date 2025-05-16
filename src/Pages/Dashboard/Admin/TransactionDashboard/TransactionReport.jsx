@@ -202,6 +202,7 @@ function TransactionReport() {
   const axiosSecure = useAxiosSecure();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [isOpen, setIsOpen] = useState(false);
 
   // useEffect(() => {
   //   // In a real app, this would be an API call
@@ -344,6 +345,10 @@ function TransactionReport() {
   const viewTransactionDetails = (transaction) => {
     setSelectedTransaction(transaction);
   };
+  const handleViewTransaction = (transaction) => {
+    setSelectedTransaction(transaction);
+    setIsOpen(true);
+  };
 
   const getStatusBadgeColor = (status) => {
     switch (status) {
@@ -359,8 +364,9 @@ function TransactionReport() {
   };
 
   const handleDelete = async (id) => {
-    console.log(id);
+    // console.log(id);
     // Show confirmation toast
+    setIsOpen(false);
     setIsConfirming(true);
     const toastId = toast(
       <div>
@@ -705,13 +711,13 @@ function TransactionReport() {
                         </Link>
                       </td> */}
                         <td className="p-4 print:hidden">
-                          <Dialog>
+                          <Dialog open={isOpen} onOpenChange={setIsOpen}>
                             <DialogTrigger asChild>
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() =>
-                                  viewTransactionDetails(transaction)
+                                  handleViewTransaction(transaction)
                                 }
                               >
                                 <Eye className="h-4 w-4" />
@@ -801,8 +807,9 @@ function TransactionReport() {
                                       className={"w-full md:w-auto"}
                                       to={`/dashboard/member-profile/${selectedTransaction.memberId}`}
                                     >
-                                      <Button variant={"outline"} 
-                                      className={"w-full md:w-auto"}
+                                      <Button
+                                        variant={"outline"}
+                                        className={"w-full md:w-auto"}
                                       >
                                         View Profile
                                       </Button>

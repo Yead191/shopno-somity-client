@@ -11,6 +11,7 @@ import auth from "@/firebase/firebase.init";
 import AuthHeader from "./AuthHeader";
 import NavigateTo from "./NavigateTo";
 import { useAuthUser } from "@/redux/auth/authAction";
+import SocialLogin from "./SocialLogin";
 
 const Login = () => {
   const user = useAuthUser();
@@ -126,7 +127,7 @@ const Login = () => {
           </form>
 
           {/* SocialLogin */}
-          {/* <SocialLogin setIsError={setIsError} /> */}
+          <SocialLogin setIsError={setIsError} />
           {/* Navigate to login */}
           <NavigateTo />
         </div>

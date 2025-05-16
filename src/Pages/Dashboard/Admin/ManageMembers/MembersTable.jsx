@@ -28,7 +28,14 @@ import {
 } from "@/components/ui/tooltip";
 // import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { format } from "date-fns";
-import { Loader, MoreVertical, Settings, ShieldCheck, Trash, User } from "lucide-react";
+import {
+  Loader,
+  MoreVertical,
+  Settings,
+  ShieldCheck,
+  Trash,
+  User,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -256,7 +263,7 @@ const MembersTable = ({ members, isLoading, refetch }) => {
           open={editModalOpen}
           setOpen={setEditModalOpen}
           member={selectedMember}
-          refetch={refetch} 
+          refetch={refetch}
         />
       )}
     </Table>

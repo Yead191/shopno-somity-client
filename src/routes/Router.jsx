@@ -15,6 +15,9 @@ import MemberProfilePage from "@/Pages/MemberProfile/MemberProfile";
 import TransactionDashboard from "@/Pages/Dashboard/Admin/TransactionDashboard/TransactionDashboard";
 import Statistics from "@/Pages/Dashboard/Admin/Statistics/Statistics";
 import LeaderboardPage from "@/Pages/Dashboard/User/LeaderboardPage";
+import PrivateRoutes from "./PrivateRoutes";
+import DashboardIndex from "@/Pages/Dashboard/DashboardIndex";
+import AdminRoutes from "./AdminRoutes";
 
 const Router = () => {
   const dispatch = useDispatch();
@@ -70,13 +73,39 @@ const Router = () => {
         <Route path="/register" element={<Register />}></Route>
 
         {/* dashboard routes */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route path="admin/manage-users" element={<ManageUsers />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoutes>
+              <DashboardLayout />
+            </PrivateRoutes>
+          }
+        >
+          <Route index element={<DashboardIndex />} />
+          <Route
+            path="admin/manage-users"
+            element={
+              <AdminRoutes>
+                <ManageUsers />
+              </AdminRoutes>
+            }
+          />
           <Route
             path="admin/transaction-report"
-            element={<TransactionDashboard />}
+            element={
+              <AdminRoutes>
+                <TransactionDashboard />
+              </AdminRoutes>
+            }
           />
-          <Route path="admin/statistics" element={<Statistics />} />
+          <Route
+            path="admin/statistics"
+            element={
+              <AdminRoutes>
+                <Statistics />
+              </AdminRoutes>
+            }
+          />
           <Route path="member-profile/:id" element={<MemberProfilePage />} />
 
           {/* user routes */}

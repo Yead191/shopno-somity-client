@@ -1,6 +1,13 @@
 import { AppSidebar } from "@/components/sidebar/AppSidebar";
+import Spinner from "@/components/Spinner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Outlet, ScrollRestoration } from "react-router-dom";
+import useRole from "@/hooks/useRole";
+import {
+  Navigate,
+  Outlet,
+  ScrollRestoration,
+  useNavigate,
+} from "react-router-dom";
 
 function DashboardLayout() {
   return (

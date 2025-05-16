@@ -16,6 +16,7 @@ import auth from "@/firebase/firebase.init";
 // import { imgUpload } from "@/components/ImgUpload";
 import { toast } from "sonner";
 import IsError from "./IsError";
+import SocialLogin from "./SocialLogin";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -439,7 +440,7 @@ const Register = () => {
           </button>
         </form>
         {/* SocialLogin */}
-        {/* <SocialLogin setIsError={setIsError} /> */}
+        <SocialLogin setIsError={setIsError} />
         {/* Navigate to login */}
         <NavigateTo />
       </div>

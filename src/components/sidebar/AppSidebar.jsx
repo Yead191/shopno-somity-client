@@ -32,6 +32,7 @@ import { RiAdvertisementFill } from "react-icons/ri";
 import { Separator } from "../ui/separator";
 import { Link, NavLink } from "react-router-dom";
 import { NavUser } from "./Nav-user";
+import useRole from "@/hooks/useRole";
 
 const items = [
   {
@@ -74,7 +75,8 @@ const items = [
 
 export function AppSidebar() {
   // const { role } = useRole();
-  const role = "user";
+  const [role, roleLoading] = useRole();
+  // console.log(role);
   const { state, toggleSidebar } = useSidebar();
   // console.log(state);
   return (
@@ -114,12 +116,12 @@ export function AppSidebar() {
                 <Separator />
               </div>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip={"Home"} asChild>
+                {/* <SidebarMenuButton tooltip={"Home"} asChild>
                   <NavLink to={"/"}>
                     <Home />
                     <span>{"Home"}</span>
                   </NavLink>
-                </SidebarMenuButton>
+                </SidebarMenuButton> */}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>

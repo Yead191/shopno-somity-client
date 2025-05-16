@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   LogIn,
   LogOut,
+  User2,
   UserPen,
 } from "lucide-react";
 
@@ -30,6 +31,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import useProfile from "@/hooks/useProfile";
 import { UpdateProfileModal } from "@/Pages/Dashboard/User/UpdateProfileModal";
+import { GiRamProfile } from "react-icons/gi";
 
 export function NavUser() {
   // const { isMobile } = useSidebar();
@@ -47,7 +49,7 @@ export function NavUser() {
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem modal={false}>
+      <SidebarMenuItem>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
@@ -98,10 +100,10 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link to={"/"}>
+              <Link to={"/dashboard/profile"}>
                 <DropdownMenuItem>
-                  <Home />
-                  Go to Home
+                  <User2 />
+                  Profile
                 </DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>

@@ -37,12 +37,13 @@ import { calculateTransactionSummary } from "@/utils/helpers";
 import { toast } from "sonner";
 import { useAuthUser } from "@/redux/auth/authAction";
 import { UpdateProfileModal } from "../Dashboard/User/UpdateProfileModal";
+import useRole from "@/hooks/useRole";
 
 function MemberProfilePage() {
   const { id } = useParams();
   const user = useAuthUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [role, roleLoading] = useRole();
   // const [member, setMember] = useState(null);
   const axiosSecure = useAxiosSecure();
   // console.log(id);
@@ -63,7 +64,7 @@ function MemberProfilePage() {
 
   const { result = {}, transactions = [], message = "" } = member || {};
 
-  if (memberLoading) {
+  if (memberLoading || roleLoading) {
     return <Spinner />;
   }
 
@@ -338,7 +339,11 @@ function MemberProfilePage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-center space-x-2 md:space-x-4 my-6 print:hidden">
+              <div
+                className={`flex justify-center space-x-2 md:space-x-4 my-6 print:hidden ${
+                  role !== "admin" && "hidden"
+                }`}
+              >
                 <DepositModal member={result} refetch={refetch} />
                 <WithdrawModal
                   member={result}

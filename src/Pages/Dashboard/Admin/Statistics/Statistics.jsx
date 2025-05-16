@@ -206,7 +206,7 @@ function Statistics() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4 overflow-y-scroll ">
+            <div className="space-y-4 overflow-y-scroll max-h-[330px]">
               {adminReport?.map((admin, index) => (
                 <div
                   key={index}
@@ -216,19 +216,19 @@ function Statistics() {
                     <Avatar className="h-12 w-12">
                       <AvatarImage
                         src={admin.adminImage}
-                        alt={admin.adminName}
+                        alt={admin?.adminName}
                         className={"object-cover"}
                       />
                       <AvatarFallback>
-                        {admin.adminName
-                          .split(" ")
+                        {admin?.adminName
+                          ?.split(" ")
                           .map((n) => n[0])
                           .join("")
                           .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{admin.adminName}</p>
+                      <p className="font-medium">{admin?.adminName}</p>
                       <p className="text-sm text-muted-foreground">
                         {admin.adminEmail}
                       </p>
@@ -258,7 +258,6 @@ function Statistics() {
         </Card>
       </div>
 
-      
       {/* todo: link to profile */}
       {/* Active Members Section */}
       <Card>

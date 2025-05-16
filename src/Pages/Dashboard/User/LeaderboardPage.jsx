@@ -173,7 +173,8 @@ export default function LeaderboardPage() {
             {/* Top 3 Podium */}
             <div className="flex flex-row justify-center items-end gap-4 mb-8 overflow-x-auto">
               {leaderboardData?.slice(0, 3).map((user, rank) => (
-                <div
+                <Link
+                  to={`/dashboard/member-profile/${user.uid}`}
                   key={user?.email}
                   className={`flex flex-col items-center ${
                     rank === 0
@@ -250,7 +251,7 @@ export default function LeaderboardPage() {
                         : "bg-gradient-to-t from-amber-700 to-amber-500"
                     }`}
                   ></div>
-                </div>
+                </Link>
               ))}
             </div>
 
@@ -264,8 +265,12 @@ export default function LeaderboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {leaderboardData.map((user, index) => (
-                    <div key={user.email} className="flex items-center gap-4">
+                  {leaderboardData?.map((user, index) => (
+                    <Link
+                      to={`/dashboard/member-profile/${user.uid}`}
+                      key={user.email}
+                      className="flex items-center gap-4"
+                    >
                       <div className="flex-shrink-0 w-8 text-center font-bold">
                         {index + 1}
                       </div>
@@ -321,7 +326,7 @@ export default function LeaderboardPage() {
                           />
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </CardContent>
