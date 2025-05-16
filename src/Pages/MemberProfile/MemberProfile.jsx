@@ -348,7 +348,7 @@ function MemberProfilePage() {
                 <WithdrawModal
                   member={result}
                   refetch={refetch}
-                  totalContribution={totalContribution}
+                  totalContribution={totalContribution?.balance}
                 />
                 <PenaltyModal member={result} refetch={refetch} />
               </div>

@@ -2,6 +2,8 @@ import { AppSidebar } from "@/components/sidebar/AppSidebar";
 import Spinner from "@/components/Spinner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import useRole from "@/hooks/useRole";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Navigate,
   Outlet,
@@ -10,6 +12,11 @@ import {
 } from "react-router-dom";
 
 function DashboardLayout() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return (
     <>
       <div className="flex font-lato overflow-x-scroll">
