@@ -84,7 +84,7 @@ function PenaltyModal({ member, refetch }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size={"sm"} className={"cursor-pointer"} variant="destructive">
+        <Button size={"sm"} disabled={!member?.isActive} className={"cursor-pointer"} variant="destructive">
           <AlertCircle className="mr-2 h-4 w-4" /> Penalty
         </Button>
       </DialogTrigger>

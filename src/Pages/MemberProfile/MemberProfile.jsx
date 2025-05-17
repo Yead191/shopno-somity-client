@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { useAuthUser } from "@/redux/auth/authAction";
 import { UpdateProfileModal } from "../Dashboard/User/UpdateProfileModal";
 import useRole from "@/hooks/useRole";
+import { AlertCircle } from "lucide-react";
 
 function MemberProfilePage() {
   const { id } = useParams();
@@ -112,9 +113,18 @@ function MemberProfilePage() {
                 </Avatar>
                 <div className="mt-4 text-left">
                   <h2 className="text-xl font-bold">{result.name}</h2>
-                  <Badge variant="outline" className="mt-1 font-normal">
-                    {result?.role.toUpperCase()}
-                  </Badge>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="outline" className="font-normal">
+                      {result?.role.toUpperCase()}
+                    </Badge>
+                    <Badge variant={"secondary"}>
+                      <span
+                        className={`h-2 w-2 rounded-full
+      ${result?.isActive ? "bg-green-500" : "bg-red-500"}`}
+                      ></span>
+                      {result?.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
                 </div>
               </div>
               <Button
@@ -337,7 +347,12 @@ function MemberProfilePage() {
                   </CardContent>
                 </Card>
               </div>
-
+              {!result?.isActive && (
+                <p className="flex items-center justify-center gap-2 text-sm text-red-500">
+                  <AlertCircle className="h-4 w-4" />
+                  This member is inactive
+                </p>
+              )}
               {/* Action Buttons */}
               <div
                 className={`flex justify-center space-x-2 md:space-x-4 my-6 print:hidden ${

@@ -85,7 +85,7 @@ function WithdrawModal({ member, refetch, totalContribution }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size={"sm"} className={"cursor-pointer"} variant="destructive">
+        <Button size={"sm"} disabled={!member.isActive} className={"cursor-pointer"} variant="destructive">
           <ArrowDownCircle className="mr-2 h-4 w-4" /> Withdraw
         </Button>
       </DialogTrigger>

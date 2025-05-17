@@ -211,6 +211,7 @@ const Register = () => {
               setUser({
                 displayName: currentUser?.displayName,
                 photoURL: currentUser?.photoURL,
+                email: currentUser?.email,
               })
             );
             // save userData in db --->
@@ -219,7 +220,11 @@ const Register = () => {
               axios.post(`${import.meta.env.VITE_API_URL}/users`, userData),
               {
                 loading: "Creating account...",
-                success: <b>Signed up successfully!</b>,
+                success: () => {
+                  setLoading(false);
+                  navigate("/login");
+                  return <b>Signed up successfully! Please Login</b>;
+                },
                 error: <b>Could not signup.</b>,
               }
             );
@@ -229,7 +234,7 @@ const Register = () => {
           })
           .finally(() => {
             setLoading(false);
-            navigate("/");
+            navigate("/login");
           });
       })
       .catch((error) =>
@@ -330,8 +335,9 @@ const Register = () => {
             <div className="w-full mt-2 relative">
               <MdLocalPhone className="absolute top-3.5 left-3 text-[1.5rem] text-[#777777]" />
               <input
-                type="number"
+                type="tel"
                 name="phoneNumber"
+                inputMode="numeric"
                 id="phoneNumber"
                 required
                 value={phoneNumber}
