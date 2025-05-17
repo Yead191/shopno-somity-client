@@ -22,7 +22,7 @@ import AdminRoutes from "./AdminRoutes";
 const Router = () => {
   const dispatch = useDispatch();
   const user = useAuthUser();
-  console.log(user);
+  // console.log(user);
 
   useEffect(() => {
     dispatch(setLoading(true));

@@ -117,7 +117,7 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
   };
 
   const copyToClipboard = (text, type) => {
-    console.log(text, type);
+    // console.log(text, type);
     navigator.clipboard
       .writeText(text)
       .then(() => {
@@ -274,7 +274,7 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
     }
   };
 
-  console.log(modalData);
+  // console.log(modalData);
   return (
     <>
       <Card className="border shadow-none border-[#e5e7eb] w-full py-6 rounded-lg">

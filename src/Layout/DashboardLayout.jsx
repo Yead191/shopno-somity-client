@@ -23,7 +23,7 @@ function DashboardLayout() {
         <SidebarProvider>
           <AppSidebar />
           <main className="px-2 md:px-4 lg:px-6 flex-1 w-full py-4">
-            <SidebarTrigger className={"fixed"} />
+            <SidebarTrigger className={"fixed z-50"} />
             <div className="my-12">
               <Outlet />
             </div>

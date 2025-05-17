@@ -128,7 +128,7 @@ function TransactionReport() {
 
   const handleExport = (format) => {
     // In a real app, this would generate and download a file
-    console.log(`Exporting transactions in ${format} format`);
+    // console.log(`Exporting transactions in ${format} format`);
   };
 
   const handlePrint = () => {

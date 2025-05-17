@@ -5,7 +5,7 @@ export async function addTransaction(data) {
   // 2. Insert the transaction record
   // 3. Update the member's total contribution
 
-  console.log("Adding transaction:", data);
+  // console.log("Adding transaction:", data);
 
   // Simulate a delay to mimic API call
   return new Promise((resolve) => {

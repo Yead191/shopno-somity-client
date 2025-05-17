@@ -56,7 +56,7 @@ const SettingsModal = ({ open, setOpen, member, refetch }) => {
     if (photo) {
       try {
         photoURL = await imgUpload(photo);
-        console.log(await photoURL);
+        // console.log(await photoURL);
       } catch (error) {
         toast.error("Failed to upload photo");
         return;

@@ -66,7 +66,7 @@ export function UpdateProfileModal({
       phoneNumber: number,
       photo: photoUrl,
     };
-    console.log(updateData);
+    // console.log(updateData);
     try {
       //   await onSubmit({ name, number, photoUrl });
       //   onClose();
@@ -83,7 +83,7 @@ export function UpdateProfileModal({
         {
           loading: "Updating Profile...",
           success: (res) => {
-            console.log(res);
+            // console.log(res);
             refetch();
             setIsSubmitting(false);
             onClose();
