@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 function TransactionHistory({ transactions }) {
-  console.log(transactions);
+  // console.log(transactions);
   return (
     <div className="overflow-x-auto">
       {transactions.length < 1 ? (

@@ -12,6 +12,7 @@ import { useAuthUser } from "@/redux/auth/authAction";
 import SocialLogin from "./SocialLogin";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAxiosPublic } from "@/hooks/useAxiosPublic";
 
 const Login = () => {
   const user = useAuthUser();
@@ -24,6 +25,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isEyeOpen, setIsEyeOpen] = useState(false);
   const [isError, setIsError] = useState("");
+  const axiosPublic = useAxiosPublic();
 
   // Login User functionality --->
   const handleSubmit = async (e) => {
@@ -32,7 +34,15 @@ const Login = () => {
     try {
       toast.promise(signInWithEmailAndPassword(auth, email, password), {
         loading: "Signing in...",
-        success: () => {
+        success: async () => {
+          try {
+            // Optionally update last login time
+            await axiosPublic.patch(`/users/last-login-at/${email}`, {
+              lastLoginAt: new Date().toISOString(),
+            });
+          } catch (err) {
+            toast.error(err.message);
+          }
           navigate("/");
           return <b>Signin Successful!</b>;
         },

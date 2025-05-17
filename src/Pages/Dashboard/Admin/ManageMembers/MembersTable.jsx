@@ -46,7 +46,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import SettingsModal from "./SettingsModal";
 
@@ -59,6 +59,8 @@ const MembersTable = ({ members, isLoading, refetch }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
+  const navigate = useNavigate();
+
   const handleMemberDelete = async () => {
     setIsDeleting(true);
     try {
@@ -82,6 +84,10 @@ const MembersTable = ({ members, isLoading, refetch }) => {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleNavigate = (id) => {
+    navigate(`/dashboard/member-profile/${id}`);
   };
 
   return (
@@ -141,7 +147,10 @@ const MembersTable = ({ members, isLoading, refetch }) => {
                         hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors
                       `}
                     >
-                      <TableCell className="py-3">
+                      <TableCell
+                        onClick={() => handleNavigate(member._id)}
+                        className="py-3 cursor-pointer"
+                      >
                         <div className="flex items-center gap-3">
                           <Avatar className="border-2 border-white dark:border-slate-800 shadow-sm h-16 w-16">
                             <AvatarImage
@@ -159,9 +168,18 @@ const MembersTable = ({ members, isLoading, refetch }) => {
                                 : "NA"}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="font-medium text-slate-800 dark:text-slate-200">
-                            {member?.name}
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="font-medium text-slate-800 dark:text-slate-200">
+                              {member?.name}
+                            </span>
+                            <Badge variant={"outline"}>
+                              <span
+                                className={`h-2 w-2 rounded-full
+      ${member?.isActive ? "bg-green-500" : "bg-red-500"}`}
+                              ></span>
+                              {member?.isActive ? "Active" : "Inactive"}
+                            </Badge>
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell className="text-slate-600 dark:text-slate-400">

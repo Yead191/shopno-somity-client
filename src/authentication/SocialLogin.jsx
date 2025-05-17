@@ -33,6 +33,7 @@ const SocialLogin = ({ setIsError }) => {
           photo: currentUser?.photoURL,
           // phoneNumber: "",
           uid: currentUser?.uid,
+          isActive: true,
           createdAt: new Date(
             currentUser?.metadata?.creationTime
           ).toISOString(),
