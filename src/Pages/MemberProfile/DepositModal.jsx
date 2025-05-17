@@ -116,6 +116,7 @@ function DepositModal({ member, refetch }) {
               <Input
                 id="amount"
                 type="number"
+                inputMode="numeric"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"

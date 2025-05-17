@@ -348,14 +348,14 @@ function MemberProfilePage() {
                 </Card>
               </div>
               {!result?.isActive && (
-                <p className="flex items-center justify-center gap-2 text-sm text-red-500">
+                <p className="flex items-center justify-center gap-2 text-sm text-red-500 -mt-4  mb-2">
                   <AlertCircle className="h-4 w-4" />
                   This member is inactive
                 </p>
               )}
               {/* Action Buttons */}
               <div
-                className={`flex justify-center space-x-2 md:space-x-4 my-6 print:hidden ${
+                className={`flex justify-center space-x-2 md:space-x-4 mt-4 mb-6 print:hidden ${
                   role !== "admin" && "hidden"
                 }`}
               >
