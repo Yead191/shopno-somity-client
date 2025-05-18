@@ -24,6 +24,7 @@ import { MdDelete } from "react-icons/md";
 import { toast } from "sonner";
 
 const AssignUserForm = ({ refetch, setIsFormOpen }) => {
+  const [imgUploading, setImgUploading] = useState(false);
   const [role, setRole] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
@@ -121,7 +122,7 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        toast.success("Copied Successfully!")
+        toast.success("Copied Successfully!");
       })
       .catch((err) => {
         toast.error("Unable to copy. Try Again!");
@@ -132,29 +133,56 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const isValidUrl = (url) => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    };
 
     // Image validation
 
     // Upload Image To imgBB
-    try {
-      if (image) {
-        // Upload Image To imgBB
+
+    let finalImageUrl = null;
+
+    // Upload Image To imgBB
+    if (image) {
+      try {
+        setImgUploading(true);
         const data = await imgUpload(image);
-        setImageUrl(data);
-        // console.log(imageUrl);
-        // Show error if image upload failed
         if (!data) {
           setLoading(false);
+          setImgUploading(false);
           setIsError("Image Upload Failed! Try Again");
           return;
         }
+        finalImageUrl = data;
+        setImageUrl(data);
+      } catch (error) {
+        console.error("Image upload error:", error);
+        setLoading(false);
+        setImgUploading(false);
+        setIsError("Image Upload Failed! Try Again");
+        return;
+      } finally {
+        setImgUploading(false);
       }
-    } catch (error) {
-      setLoading(false);
-      setIsError("Image Upload Failed! Try Again");
-      return;
+    } else {
+      // Set default image URL if no image is provided
+      finalImageUrl =
+        "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png";
+      setImageUrl(finalImageUrl); // Update state for consistency
     }
 
+    // Validate finalImageUrl
+    if (!finalImageUrl || !isValidUrl(finalImageUrl)) {
+      setLoading(false);
+      setIsError("Invalid image URL. Please try again.");
+      return;
+    }
     // Role Validation
     if (!role) {
       setLoading(false);
@@ -222,20 +250,17 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
       email,
       name,
       password: strongPassword,
-      photo: imageUrl
-        ? imageUrl
-        : "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
+      photo: finalImageUrl,
       phoneNumber,
       isActive: true,
     };
 
     try {
+      // if (!imgUploading) {
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_URL}/users/assign-user`,
         user
       );
-      // console.log(data);
-      // Check for success based on response structure
       if (
         data?.firestore?.insertedId ||
         data?.message === "User Created Successfully"
@@ -247,7 +272,7 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
         setImage("");
         setEmail("");
         setPreview("");
-        setPhoneNumber("+880");
+        setPhoneNumber("");
         setStrongPassword("");
         setConfirmedPassword("");
         setShowPassword(false);
@@ -261,6 +286,9 @@ const AssignUserForm = ({ refetch, setIsFormOpen }) => {
       } else {
         setIsError("Unexpected response from server. Please try again.");
       }
+      // }
+      // console.log(data);
+      // Check for success based on response structure
     } catch (error) {
       // Log the error for debugging
       console.error("Error during user assignment:", error);

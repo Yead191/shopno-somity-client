@@ -25,49 +25,6 @@ import DashboardPagesHeader from "@/components/DashboardPagesHeader";
 import { Link } from "react-router-dom";
 import Spinner from "@/components/Spinner";
 
-// Demo data
-// const leaderboardData = [
-//   {
-//     name: "Md Asadur Rahaman Yead",
-//     email: "yead191@gmail.com",
-//     photo: "https://i.ibb.co/VYkshjjS/yead-dp.jpg",
-//     phoneNumber: "01624343168",
-//     totalDeposit: 5600,
-//     totalWithdraw: 600,
-//     totalPenalties: 50,
-//     totalContribution: 5000,
-//     rank: 1,
-//     joinDate: "2025-03-29T00:34:03.000Z",
-//   },
-//   {
-//     name: "Sharif Md Abdul Hafiz",
-//     email: "Hafiz@kalu.com",
-//     photo:
-//       "https://i.ibb.co.com/60pFscCm/472778164-1866771823728846-2588711625832728825-n.jpg",
-//     phoneNumber: "01536634563",
-//     totalDeposit: 3900,
-//     totalWithdraw: 900,
-//     totalPenalties: 0,
-//     totalContribution: 3000,
-//     rank: 2,
-//     joinDate: "2025-05-08T13:03:38.000Z",
-//   },
-//   {
-//     name: "Oli ahmed Shoaib",
-//     email: "oli@gmail.com",
-//     photo:
-//       "https://i.ibb.co/Wvdjf7mw/470174871-1269445434291827-8488320051007972735-n.jpg",
-//     phoneNumber: "01310808413",
-//     totalDeposit: 2900,
-//     totalWithdraw: 1200,
-//     totalPenalties: 100,
-//     totalContribution: 1700,
-//     rank: 3,
-//     joinDate: "2025-05-07T11:50:25.000Z",
-//   },
-// ];
-
-// Find the highest contribution for progress bar calculation
 
 export default function LeaderboardPage() {
   const axiosPublic = useAxiosPublic();
@@ -278,6 +235,7 @@ export default function LeaderboardPage() {
                         <AvatarImage
                           src={user?.photo || "/placeholder.svg"}
                           alt={user.name}
+                          className={"object-cover"}
                         />
                         <AvatarFallback>
                           {user.name
@@ -344,10 +302,11 @@ export default function LeaderboardPage() {
                 <Card className={"hover:border-blue-400"}>
                   <CardHeader className="pb-2 flex flex-col md:flex-row gap-4 md:items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12 border-2 border-white shadow">
+                      <Avatar className="h-12 w-12 border-2 border-white shadow object-cover">
                         <AvatarImage
                           src={user.photo || "/placeholder.svg"}
                           alt={user.name}
+                          className={"object-cover"}
                         />
                         <AvatarFallback>
                           {user.name

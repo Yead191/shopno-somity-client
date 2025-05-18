@@ -30,7 +30,7 @@ import WithdrawModal from "./WithdrawModal";
 
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
-import { format, formatDate } from "date-fns";
+import { format, formatDate, formatDistanceToNow } from "date-fns";
 import Spinner from "@/components/Spinner";
 import PenaltyModal from "./PenaltyModal";
 import { calculateTransactionSummary } from "@/utils/helpers";
@@ -304,9 +304,11 @@ function MemberProfilePage() {
                           </span>
                           <span className="text-sm">
                             {result?.lastLoginAt
-                              ? format(
+                              ? formatDistanceToNow(
                                   new Date(result.lastLoginAt),
-                                  "dd MMM yyyy"
+                                  {
+                                    addSuffix: true,
+                                  }
                                 )
                               : "N/A"}
                           </span>

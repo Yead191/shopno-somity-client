@@ -60,7 +60,7 @@ function Statistics() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const axiosSecure = useAxiosSecure();
   // const [data, isLoading, , error] = useMember(active);
-  const { data: members = [], isLoading: memberLoading } = useQuery({
+  const { data: members = [], isLoading: memberLoading, refetch: memberRefetch } = useQuery({
     queryKey: ["activeMember", searchTerm],
     queryFn: async () => {
       const { data } = await axiosSecure.get(
@@ -145,7 +145,7 @@ function Statistics() {
       {/* Add Member Form */}
       {isFormOpen && (
         <div className={`${isFormOpen ? "visible" : "hidden"} mt-4`}>
-          <AssignUserForm refetch={refetch} setIsFormOpen={setIsFormOpen} />
+          <AssignUserForm refetch={memberRefetch} setIsFormOpen={setIsFormOpen} />
         </div>
       )}
 
