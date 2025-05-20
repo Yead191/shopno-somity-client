@@ -13,6 +13,7 @@ import SocialLogin from "./SocialLogin";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAxiosPublic } from "@/hooks/useAxiosPublic";
+import { Button } from "@/components/ui/button";
 
 const Login = () => {
   const user = useAuthUser();
@@ -30,6 +31,8 @@ const Login = () => {
   // Login User functionality --->
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     setIsError("");
     try {
       toast.promise(signInWithEmailAndPassword(auth, email, password), {
@@ -43,10 +46,14 @@ const Login = () => {
           } catch (err) {
             toast.error(err.message);
           }
+          setLoading(false);
           navigate("/");
           return <b>Signin Successful!</b>;
         },
-        error: (error) => error.message,
+        error: (error) => {
+          setLoading(false);
+          return error.message;
+        },
       });
     } catch (error) {
       let errorMessage = "Login Failed!";
@@ -127,13 +134,13 @@ const Login = () => {
             {/* Error Message */}
             <IsError isError={isError} />
             {/* Register Button */}
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="btn py-2 border-none rounded-lg text-white text-lg mt-1 bg-[#0E82FD] hover:bg-[#0e72fd] duration-700 cursor-pointer disabled:text-gray-700"
+              className="btn py-2 border-none rounded-lg text-white text-lg mt-1 bg-[#0E82FD] hover:bg-[#0e72fd] duration-700 cursor-pointer"
             >
               {loading ? "Login in..." : "Login"}
-            </button>
+            </Button>
           </form>
 
           {/* SocialLogin */}
