@@ -49,8 +49,9 @@ A feature-rich, role-based cooperative society management application designed t
 
 ### Public Routes
 
+
 | Path          | Component      | Description               |
-|---------------|----------------|---------------------------|        |
+|---------------|----------------|---------------------------|
 | `/login`      | `Login`        | Login page                |
 | `/register`   | `Register`     | Registration page         |
 
