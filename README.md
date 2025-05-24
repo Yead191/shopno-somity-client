@@ -1,12 +1,79 @@
-# React + Vite
+# স্বপ্নস্বাক্ষর সমিতি (ShopnoShakkhor Somiti)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![স্বপ্নস্বাক্ষর সমিতি Banner](https://i.ibb.co/40rfGD5/IMG-3815.jpg)
 
-Currently, two official plugins are available:
+A feature-rich, role-based cooperative society management application designed to simplify the operations of a community savings and credit system. The platform offers a centralized dashboard for admins to manage users, transactions, and statistics, while allowing members to view and manage their profiles.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🌐 **Live Demo:** [shopno-somiti.vercel.app](https://shopno-somiti.vercel.app)  
+🔐 **Admin Access:**  
+- **Email:** `admin@somiti.com`  
+- **Password:** `Admin123@`
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🧭 Table of Contents
+
+- [Features](#features)
+- [Routes Overview](#routes-overview)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Dependencies](#dependencies)
+- [Configuration](#configuration)
+- [Examples](#examples)
+- [Troubleshooting](#troubleshooting)
+- [Contributors](#contributors)
+- [License](#license)
+
+---
+
+## 🚀 Features
+
+- 🔐 **Authentication System** – Secure login and registration system.
+- 🧑‍💼 **Admin Panel**:
+  - Add new members with credentials via **Firebase Admin SDK**
+  - Deposit, withdraw, and impose penalties for members
+  - Manage user roles and access
+  - View real-time transaction reports and statistics
+- 👥 **Member Features**:
+  - Update personal profile (name, phone number, profile picture)
+  - View own profile and transaction history
+  - Participate in leaderboard rankings
+- 📊 **Data Visualization** – Real-time charts and statistics for admins using **Recharts**
+- 🎨 **Modern UI** – Built with **TailwindCSS** and **Radix UI**
+- 🔄 **Asynchronous Data Fetching** – Handled with **React Query**
+- ⚙️ **Role-Based Access Control** – Routes protected by authentication and role checks
+
+---
+
+## 🛣 Routes Overview
+
+### Public Routes
+
+| Path          | Component      | Description               |
+|---------------|----------------|---------------------------|        |
+| `/login`      | `Login`        | Login page                |
+| `/register`   | `Register`     | Registration page         |
+
+### Protected Dashboard Routes
+
+All `/dashboard` routes are protected and role-based.
+
+| Path                                  | Component               | Access Role     |
+|---------------------------------------|--------------------------|-----------------|
+| `/dashboard/leaderboard`             | `LeaderboardPage`        | All users       |
+| `/dashboard/profile`                 | `MemberProfilePage`      | All users          |
+| `/dashboard/member-profile/:id`      | `MemberProfilePage`      | Member/Admin    |
+| `/dashboard/admin/manage-users`      | `ManageUsers`            | Admin only      |
+| `/dashboard/admin/transaction-report`| `TransactionDashboard`   | Admin only      |
+| `/dashboard/admin/statistics`        | `Statistics`             | Admin only      |
+
+---
+
+## 🛠 Installation
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/your-username/shopno-somiti.git
+cd shopno-somiti
+npm install
