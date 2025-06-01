@@ -214,7 +214,7 @@ function MemberProfilePage() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="h-6 w-6 lg:opacity-0 group-hover:opacity-100 transition-opacity"
                                 onClick={() => copyToClipboard(result?._id)}
                               >
                                 <CopyIcon className="h-3.5 w-3.5" />
@@ -234,13 +234,13 @@ function MemberProfilePage() {
                           </span>
                           <span className="text-sm">{result?.name}</span>
                         </div>
-                        <Button
+                        {/* <Button
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <Edit className="h-3.5 w-3.5" />
-                        </Button>
+                        </Button> */}
                       </div>
 
                       <div className="flex items-center justify-between py-1 group">
@@ -256,7 +256,7 @@ function MemberProfilePage() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="h-6 w-6 lg:opacity-0 group-hover:opacity-100 transition-opacity"
                                 onClick={() => copyToClipboard(result?.email)}
                               >
                                 <CopyIcon className="h-3.5 w-3.5" />
@@ -282,13 +282,16 @@ function MemberProfilePage() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="h-6 w-6 lg:opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() =>
+                                  copyToClipboard(result?.phoneNumber)
+                                }
                               >
-                                <Edit className="h-3.5 w-3.5" />
+                                <CopyIcon className="h-3.5 w-3.5" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Edit Phone Number</p>
+                              <p>Copy Phone Number</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
