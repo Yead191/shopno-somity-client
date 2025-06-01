@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ArrowUpCircle } from "lucide-react";
 
 function WithdrawModal({ member, refetch, totalContribution }) {
   const [open, setOpen] = useState(false);
@@ -86,7 +87,7 @@ function WithdrawModal({ member, refetch, totalContribution }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size={"sm"} disabled={!member.isActive} className={"cursor-pointer"} variant="destructive">
-          <ArrowDownCircle className="mr-2 h-4 w-4" /> Withdraw
+          <ArrowUpCircle className="mr-2 h-4 w-4" /> Withdraw
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
