@@ -27,6 +27,7 @@ import { useQuery } from "@tanstack/react-query";
 import Spinner from "@/components/Spinner";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { Link } from "react-router-dom";
+import { TbCoinTaka } from "react-icons/tb";
 
 // Mock data
 // const overviewStats = {
@@ -60,7 +61,11 @@ function Statistics() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const axiosSecure = useAxiosSecure();
   // const [data, isLoading, , error] = useMember(active);
-  const { data: members = [], isLoading: memberLoading, refetch: memberRefetch } = useQuery({
+  const {
+    data: members = [],
+    isLoading: memberLoading,
+    refetch: memberRefetch,
+  } = useQuery({
     queryKey: ["activeMember", searchTerm],
     queryFn: async () => {
       const { data } = await axiosSecure.get(
@@ -145,7 +150,10 @@ function Statistics() {
       {/* Add Member Form */}
       {isFormOpen && (
         <div className={`${isFormOpen ? "visible" : "hidden"} mt-4`}>
-          <AssignUserForm refetch={memberRefetch} setIsFormOpen={setIsFormOpen} />
+          <AssignUserForm
+            refetch={memberRefetch}
+            setIsFormOpen={setIsFormOpen}
+          />
         </div>
       )}
 
@@ -338,7 +346,7 @@ function Statistics() {
       {/* Reports Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Member Report */}
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-medium flex items-center">
               <Users className="mr-2 h-5 w-5" /> Member Report
@@ -372,10 +380,10 @@ function Statistics() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Package Report */}
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-medium flex items-center">
               <Package className="mr-2 h-5 w-5" /> Package Report
@@ -409,10 +417,10 @@ function Statistics() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* User Report */}
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-medium flex items-center">
               <User className="mr-2 h-5 w-5" /> User Report
@@ -446,7 +454,7 @@ function Statistics() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Detailed Statistics Tabs */}
@@ -462,37 +470,42 @@ function Statistics() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <StatCard
                   title="Total Members"
-                  value={memberStats.totalMembers}
+                  value={overviewStats?.totalMembers}
                   icon={<Users className="h-4 w-4" />}
                 />
                 <StatCard
                   title="Active Members"
-                  value={memberStats.activeMembers}
+                  value={overviewStats?.activeMemberCount}
                   icon={<Users className="h-4 w-4" />}
                 />
                 <StatCard
                   title="Inactive Members"
-                  value={memberStats.totalMembers - memberStats.activeMembers}
+                  value={overviewStats?.inactiveMemberCount}
                   icon={<Users className="h-4 w-4" />}
                 />
               </div>
             </TabsContent>
             <TabsContent value="transactions" className="pt-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <StatCard
                   title="Total Transactions"
-                  value={transactionSummary[5]?.count}
+                  value={transactionSummary[3]?.count}
                   icon={<CreditCard className="h-4 w-4" />}
                 />
                 <StatCard
                   title="Total Deposits"
                   value={transactionSummary[0]?.count}
-                  icon={<DollarSign className="h-4 w-4" />}
+                  icon={<TbCoinTaka className="h-4 w-4" />}
                 />
                 <StatCard
                   title="Total Withdrawals"
                   value={transactionSummary[1]?.count}
-                  icon={<DollarSign className="h-4 w-4" />}
+                  icon={<TbCoinTaka className="h-4 w-4" />}
+                />
+                <StatCard
+                  title="Total Penalties"
+                  value={transactionSummary[2]?.count}
+                  icon={<TbCoinTaka className="h-4 w-4" />}
                 />
               </div>
             </TabsContent>
@@ -502,7 +515,7 @@ function Statistics() {
                   title="Growth Rate"
                   value="12%"
                   trend="up"
-                  icon={<DollarSign className="h-4 w-4" />}
+                  icon={<TbCoinTaka className="h-4 w-4" />}
                 />
                 <StatCard
                   title="Retention Rate"
