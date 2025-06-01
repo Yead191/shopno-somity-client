@@ -23,6 +23,7 @@ import { ArrowUpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthUser } from "@/redux/auth/authAction";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
+import { ArrowDownCircle } from "lucide-react";
 
 function DepositModal({ member, refetch }) {
   const user = useAuthUser();
@@ -84,7 +85,7 @@ function DepositModal({ member, refetch }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size={"sm"} disabled={!member?.isActive} className="bg-green-600 hover:bg-green-700 cursor-pointer">
-          <ArrowUpCircle className="mr-2 h-4 w-4" /> Deposit
+          <ArrowDownCircle className="mr-2 h-4 w-4" /> Deposit
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
